@@ -94,9 +94,9 @@ if [ $OSNAME != "macos" ];then
 	if [ ! -d /www/server/mdserver-web ];then
 		curl --insecure -sSLo /tmp/master.zip ${HTTP_PREFIX}github.com/sawyerlin/linux-panel-public/archive/refs/heads/main.zip
 		cd /tmp && unzip /tmp/master.zip
-		mv -f /tmp/linux-panel-master /www/server/mdserver-web
+		mv -f /tmp/linux-panel-public-main /www/server/mdserver-web
 		rm -rf /tmp/master.zip
-		rm -rf /tmp/linux-panel-master
+		rm -rf /tmp/linux-panel-public-main
 	fi
 
 	# install acme.sh
