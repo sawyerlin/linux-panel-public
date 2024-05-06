@@ -103,6 +103,16 @@ fi
 apt install -y devscripts
 apt install -y net-tools
 apt install -y python3-dev
+apt install -y software-properties-common
+add-apt-repository ppa:deadsnakes/ppa
+apt update
+# python 3.9
+apt install python3.9
+update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
+apt install python3.9-venv
+apt install python3.9-distutils
+python3.9 -m ensurepip
+# python 3.9
 apt install -y autoconf
 apt install -y gcc
 apt install -y lrzsz
