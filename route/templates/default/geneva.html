@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="main-content pb55">
+    <div class="container-fluid">
+        <div class="pos-box bgw mtb15">
+            <div class="position f14 c9 pull-left">
+                <a class="plr10 c4" href="/">首页</a>/<span class="plr10 c4">移动墙</span>
+            </div>
+        </div>
+        <div class="safe bgw mtb15 pd15">
+            <div class="info-title-tips">
+                <p>过移动墙</p>
+            </div>
+            <button id="start_btn" onclick="start()" class="btn btn-success btn-sm btn-title hide" type="button">启动</button>
+            <button id="stop_btn" onclick="stop()" class="btn btn-success btn-sm btn-title hide" type="button">停止</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/static/app/geneva.js?v={{config.version}}"></script>
+<script type="text/javascript">		
+setTimeout(function(){
+	getStatus();
+},500);
+</script>
+{% endblock %}
