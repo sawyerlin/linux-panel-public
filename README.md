@@ -14,7 +14,7 @@ curl --insecure -fsSL https://ceshi.tingwen777.com/ceshi_proxy/raw.githubusercon
 - 更新
 
 ```
-curl --insecure -fsSL https://raw.githubusercontent.com/sawyerlin/linux-panel/main/scripts/update_public.sh | bash
+curl --insecure -fsSL https://raw.githubusercontent.com/sawyerlin/linux-panel-public/main/scripts/update_public.sh | bash
 ```
 
 ### China
