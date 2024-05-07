@@ -210,7 +210,7 @@ else
 
     # install py39
     wget -P /tmp https://www.python.org/ftp/python/3.9.19/Python-3.9.19.tgz
-    tar -xvf /tmpPython-3.9.19.tgz
+    tar -xvf /tmp/Python-3.9.19.tgz
     cd /tmp/Python-3.9.19 && \
         ./configure --enable-optimizations && \
         make && make altintall
