@@ -103,10 +103,11 @@ fi
 apt install -y devscripts
 apt install -y net-tools
 apt install -y python3-dev
+# python 3.9
+echo "Start installing python3.9"
 apt install -y software-properties-common
 add-apt-repository ppa:deadsnakes/ppa
 apt update
-# python 3.9
 apt install python3.9
 update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
 apt install python3.9-venv
