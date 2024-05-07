@@ -209,9 +209,9 @@ else
     done
 
     # install py39
-    wget -P /tmp https://www.python.org/ftp/python/3.9.17/Python-3.9.17.tgz
+    wget -P /tmp https://www.python.org/ftp/python/3.9.18/Python-3.9.18.tgz
     
-    cd /tmp && tar -xvf Python-3.9.17.tgz && cd Python-3.9.17 && \
+    cd /tmp && tar -xvf Python-3.9.18.tgz && cd Python-3.9.18 && \
         ./configure --enable-optimizations && \
         make && make altintall
     ln -sf /usr/local/bin/python3.9 /usr/bin/python3
