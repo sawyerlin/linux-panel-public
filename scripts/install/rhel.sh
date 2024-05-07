@@ -209,13 +209,12 @@ else
     done
 
     # install py39
-    wget -P /tmp https://www.python.org/ftp/python/3.9.19/Python-3.9.19.tgz
+    wget -P /tmp https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
     
-    cd /tmp && tar -xvf Python-3.9.19.tgz && cd Python-3.9.19 && \
+    cd /tmp && tar -xvf Python-3.9.6.tgz && cd Python-3.9.6 && \
         ./configure --enable-optimizations && \
         make && make altintall
-    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1
-    python3 -m pip
+    ln -sf /usr/local/bin/python3.9 /usr/bin/python3
     python3 -m ensurepip
 fi
 
