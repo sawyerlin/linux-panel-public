@@ -640,9 +640,17 @@ function domainEdit(id, name, msg, status) {
 			if (domain[i].success_rate) {
 				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ")\">" +  domain[i].success_rate + "%</a>";
 			}
+			domain_name = domain[i].name;
+			is_exist = domain[i].is_exist;
+			dns_url = domain[i].dns_url;
+			btn = '<a class="btlink" target="_blank" href="' + dns_url + '">添加</a>'
+			if (is_exist) {
+				btn = '<a class="btlink" target="_blank" href="' + dns_url + '">管理</a>'
+			}
 			echoHtml += "<tr>\
-				<td><a title='"+lan.site.click_access+"' target='_blank' href='http://" + domain[i].name + ":" + domain[i].port + "' class='btlinkbed'>" + domain[i].name + "</a></td>\
+				<td><a title='"+lan.site.click_access+"' target='_blank' href='http://" + domain_name + ":" + domain[i].port + "' class='btlinkbed'>" + domain_name + "</a></td>\
 				<td>"+success_rate+"</td>\
+				<td>"+btn+"</td>\
 				<td><a class='btlinkbed'>" + domain[i].port + "</a></td>\
 				<td class='text-center'><a class='table-btn-del' href='javascript:;' onclick=\"delDomain(" + id + ",'" + name + "','" + domain[i].name + "','" + domain[i].port + "',1)\"><span class='glyphicon glyphicon-trash'></span></a></td>\
 				</tr>";
@@ -652,7 +660,7 @@ function domainEdit(id, name, msg, status) {
 								<button type='button' class='btn btn-success btn-sm pull-right' style='margin:30px 35px 0 0' onclick=\"domainAdd(" + id + ",'" + name + "',1)\">添加</button>\
 							<div class='divtable mtb15' style='height:350px;overflow:auto'>\
 								<table class='table table-hover' width='100%'>\
-								<thead><tr><th>"+lan.site.domain+"</th><th width='58'>连通率</th><th width='70px'>端口</th><th width='50px' class='text-center'>操作</th></tr></thead>\
+								<thead><tr><th>"+lan.site.domain+"</th><th width='58'>连通率</th><th width='68'>DNS管理</th><th width='70px'>端口</th><th width='50px' class='text-center'>操作</th></tr></thead>\
 								<tbody id='checkDomain'>" + echoHtml + "</tbody>\
 								</table>\
 							</div>";
@@ -1403,7 +1411,7 @@ function dirBinding(id){
 			   + "<button class='btn btn-success btn-sm' onclick='addDirBinding("+id+")'>添加</button>"
 			   + "</div>"
 			   + "<div class='divtable mtb15' style='height:470px;overflow:auto'><table class='table table-hover' width='100%' style='margin-bottom:0'>"
-			   + "<thead><tr><th>域名</th><th width='58'>连通率</th><th width='70'>端口</th><th width='100'>子目录</th><th width='100' class='text-right'>操作</th></tr></thead>"
+			   + "<thead><tr><th>域名</th><th width='58'>连通率</th><th width='68'>DNS管理</th><th width='70'>端口</th><th width='100'>子目录</th><th width='100' class='text-right'>操作</th></tr></thead>"
 			   + "<tbody id='checkDomain'>" + echoHtml + "</tbody>"
 			   + "</table></div>";
 		

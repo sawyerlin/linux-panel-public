@@ -514,7 +514,7 @@ def api(reqClass=None, reqAction=None, reqData=None):
         return mw.returnJson(False, '请指定请求方法')
 
     classFile = ('config_api', 'crontab_api', 'files_api', 'firewall_api',
-                 'plugins_api', 'system_api', 'site_api', 'geneva_api', 'task_api',
+                 'plugins_api', 'system_api', 'site_api', 'geneva_api', 'dns_api', 'task_api',
                  'logs_api')
     className = reqClass + '_api'
     if not className in classFile:
@@ -554,7 +554,7 @@ def index(reqClass=None, reqAction=None, reqData=None):
             reqClass = 'index'
 
         pageFile = ('config', 'control', 'crontab', 'files', 'logs', 'firewall',
-                    'index', 'plugins', 'login', 'system', 'site', 'geneva', 'cert', 'ssl', 'task', 'soft')
+                    'index', 'plugins', 'login', 'system', 'site', 'geneva', 'dns', 'cert', 'ssl', 'task', 'soft')
 
         if reqClass == 'login':
             token = request.args.get('tmp_token', '').strip()
@@ -594,7 +594,7 @@ def index(reqClass=None, reqAction=None, reqData=None):
 
     # API请求
     classFile = ('config_api', 'crontab_api', 'files_api', 'logs_api', 'firewall_api',
-                 'plugins_api', 'system_api', 'site_api', 'geneva_api', 'task_api', 'vip_api')
+                 'plugins_api', 'system_api', 'site_api', 'geneva_api', 'dns_api', 'task_api', 'vip_api')
     className = reqClass + '_api'
     if not className in classFile:
         return "api error request"
