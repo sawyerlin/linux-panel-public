@@ -5104,3 +5104,11 @@ select[disabled]{
 .progress .bg-success {
    background-color: #28a745 !important; 
 }
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+}

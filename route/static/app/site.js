@@ -61,8 +61,14 @@ $('#site_search').click(function(){
 			var success_rate = "N/A";
 			var rate = data.data[i].success_rate; 
 			if (rate) {
-				progress = "<div class='progress-bar bg-success' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'>" + rate + "%</div>"
-				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + data.data[i].domain_speed_id + ")\"><div class='progress'>" +  progress + "%</div></a>";
+				rate_class = 'bg-success';
+				if (rate >=0 && rate <= 30) {
+					rate_class = 'bg-danger'
+				} else if (rate > 30 && rate <= 90) {
+					rate_class = 'bg-warning'
+				}
+				progress = "<div class='progress-bar "+rate_class+"' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'>" + rate + "%</div>"
+				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + data.data[i].domain_speed_id + ")\"><div class='progress'>" +  progress + "</div></a>";
 			}
 			//是否设置有效期
 			var web_end_time = (data.data[i].edate == "0000-00-00") ? '永久': data.data[i].edate;
@@ -82,7 +88,7 @@ $('#site_search').click(function(){
 					<td>" + status + "</td>\
 					<td>" + backup + "</td>\
 					<td><a class='btlink' title='打开目录"+data.data[i].path+"' href=\"javascript:openPath('"+data.data[i].path+"');\">" + shortpath + "</a></td>\
-					<td>" + success_rate + "</td>\
+					<td width='200'>" + success_rate + "</td>\
 					<td><a class='btlink setTimes' id='site_"+data.data[i].id+"' data-ids='"+data.data[i].id+"'>" + web_end_time + "</a></td>\
 					<td><a class='btlinkbed' href='javascript:;' data-id='"+data.data[i].id+"'>" + data.data[i].ps + "</a></td>\
 					<td style='text-align:right; color:#bbb'>\
@@ -640,7 +646,13 @@ function domainEdit(id, name, msg, status) {
 			var success_rate = "N/A";
 			var rate = domain[i].success_rate; 
 			if (rate) {
-				progress = "<div class='progress-bar bg-success' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'>" + rate + "%</div>"
+				rate_class = 'bg-success';
+				if (rate >=0 && rate <= 30) {
+					rate_class = 'bg-danger'
+				} else if (rate > 30 && rate <= 90) {
+					rate_class = 'bg-warning'
+				}
+				progress = "<div class='progress-bar " +rate_class+ "' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'>" + rate + "%</div>"
 				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ")\"><div class='progress'>" +  progress + "%</div></a>";
 			}
 			domain_name = domain[i].name;
@@ -652,7 +664,7 @@ function domainEdit(id, name, msg, status) {
 			}
 			echoHtml += "<tr>\
 				<td><a title='"+lan.site.click_access+"' target='_blank' href='http://" + domain_name + ":" + domain[i].port + "' class='btlinkbed'>" + domain_name + "</a></td>\
-				<td>" + success_rate + "</td>\
+				<td width='200'>" + success_rate + "</td>\
 				<td>"+btn+"</td>\
 				<td><a class='btlinkbed'>" + domain[i].port + "</a></td>\
 				<td class='text-center'><a class='table-btn-del' href='javascript:;' onclick=\"delDomain(" + id + ",'" + name + "','" + domain[i].name + "','" + domain[i].port + "',1)\"><span class='glyphicon glyphicon-trash'></span></a></td>\
