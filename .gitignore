@@ -180,11 +180,11 @@ mdioks.session-journal
 
 server.ssh
 # venv
-bin
-include
-lib
-lib64
-pyvenv.cfg
+/bin
+/include
+/lib
+/lib64
+/pyvenv.cfg
 
 plugins/*
 
