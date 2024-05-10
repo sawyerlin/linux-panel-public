@@ -114,7 +114,7 @@ apt install -y python3.9-venv
 apt install -y python3.9-distutils
 python3.9 -m ensurepip
 apt install python3-apt --reinstall
-cp /usr/lib/python3/dist-packages/apt_pkg.cpython-310-x86_64-linux-gnu.so /usr/lib/python3/dis-packages/apt_pkg.so
+cp /usr/lib/python3/dist-packages/apt_pkg.cpython-310-x86_64-linux-gnu.so /usr/lib/python3/dist-packages/apt_pkg.so
 # python 3.9
 apt install -y autoconf
 apt install -y gcc
