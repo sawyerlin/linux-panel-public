@@ -25,15 +25,7 @@ yum install -y rar unrar
 yum install -y python3-devel
 yum install -y python3-pip
 yum install -y python-devel
-# install py39
-rm -rf /tmp/Python-3.9.6
-wget -P /tmp https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
 
-cd /tmp && tar -xvf Python-3.9.6.tgz && cd Python-3.9.6 && \
-./configure --enable-optimizations && \
-make && make altintall
-ln -sf /usr/local/bin/python3.9 /usr/bin/python3
-python3 -m ensurepip
 yum install -y vixie-cron
 yum install -y curl-devel  
 yum install -y libmcrypt
@@ -165,6 +157,16 @@ if [ "$VERSION_ID" -eq "9" ];then
 	dnf --enablerepo=crb install -y libzip libzip-devel
 	# yum remove -y chardet
 fi
+
+# install py39
+rm -rf /tmp/Python-3.9.6
+wget -P /tmp https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
+
+cd /tmp && tar -xvf Python-3.9.6.tgz && cd Python-3.9.6 && \
+./configure --enable-optimizations && \
+make && make altinstall
+ln -sf /usr/local/bin/python3.9 /usr/bin/python3
+python3 -m ensurepip
 
 cd /www/server/mdserver-web/scripts && bash lib.sh
 chmod 755 /www/server/mdserver-web/data
