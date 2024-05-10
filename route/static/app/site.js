@@ -60,7 +60,7 @@ $('#site_search').click(function(){
 			}
 			var success_rate = "N/A";
 			var rate = data.data[i].success_rate; 
-			if (rate) {
+			if (rate !== undefined) {
 				rate_class = 'bg-success';
 				if (rate >=0 && rate <= 30) {
 					rate_class = 'bg-danger'
@@ -645,7 +645,7 @@ function domainEdit(id, name, msg, status) {
 		for (var i = 0; i < domain.length; i++) {
 			var success_rate = "N/A";
 			var rate = domain[i].success_rate; 
-			if (rate) {
+			if (rate != undefined) {
 				rate_class = 'bg-success';
 				if (rate >=0 && rate <= 30) {
 					rate_class = 'bg-danger'
