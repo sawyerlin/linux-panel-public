@@ -653,7 +653,7 @@ function domainEdit(id, name, msg, status) {
 					rate_class = 'bg-warning'
 				}
 				progress = "<div class='progress-bar " +rate_class+ "' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'>" + rate + "%</div>"
-				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ")\"><div class='progress'>" +  progress + "%</div></a>";
+				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ")\"><div class='progress'>" +  progress + "</div></a>";
 			}
 			domain_name = domain[i].name;
 			is_exist = domain[i].is_exist;
