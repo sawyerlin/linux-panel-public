@@ -212,12 +212,4 @@ fi
 cd /www/server/mdserver-web/scripts && bash lib.sh
 chmod 755 /www/server/mdserver-web/data
 
-# install py39
-rm -rf /tmp/Python-3.9.6
-wget -P /tmp https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
 
-cd /tmp && tar -xvf Python-3.9.6.tgz && cd Python-3.9.6 && \
-./configure --enable-optimizations && \
-make && make altintall
-ln -sf /usr/local/bin/python3.9 /usr/bin/python3
-python3 -m ensurepip
