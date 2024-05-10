@@ -67,8 +67,8 @@ $('#site_search').click(function(){
 				} else if (rate > 30 && rate <= 90) {
 					rate_class = 'bg-warning'
 				}
-				progress = "<div class='progress-bar "+rate_class+"' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'>" + rate + "%</div>"
-				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + data.data[i].domain_speed_id + ")\"><div class='progress'>" +  progress + "</div></a>";
+				progress = "<div class='progress-bar "+rate_class+"' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'></div>"
+				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + data.data[i].domain_speed_id + ")\"><div class='progress' style='position: relative;'><span style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; line-height: 20px;'>" +rate+ "%</span>" +  progress + "</div></a>";
 			}
 			//是否设置有效期
 			var web_end_time = (data.data[i].edate == "0000-00-00") ? '永久': data.data[i].edate;
@@ -652,8 +652,8 @@ function domainEdit(id, name, msg, status) {
 				} else if (rate > 30 && rate <= 90) {
 					rate_class = 'bg-warning'
 				}
-				progress = "<div class='progress-bar " +rate_class+ "' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'>" + rate + "%</div>"
-				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ")\"><div class='progress'>" +  progress + "</div></a>";
+				progress = "<div class='progress-bar " +rate_class+ "' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'></div>"
+				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ")\"><div class='progress' style='position: relative;'><span style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; line-height: 20px;'>" +rate+ "%</span>" +  progress + "</div></a>";
 			}
 			domain_name = domain[i].name;
 			is_exist = domain[i].is_exist;
