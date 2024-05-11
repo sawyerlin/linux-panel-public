@@ -94,6 +94,7 @@
             <script src="/static/js/jquery.dragsort-0.5.2.min.js"></script>
             <script src="/static/js/jquery-qrcode-0.18.0.min.js?v={{config.version}}"></script>
             <script src="/static/js/xm-select.js"></script>
+            <script src="/static/app/soft.js?v={{config.version}}" type="text/javascript" ></script>
             
             {% block content %}{% endblock %}
             <div class="footer bgw">1736 linux-panel</span>
@@ -160,6 +161,9 @@ if (thisPath.indexOf('?')>-1){
         $('#memuA').css('background-color','#f2f2f2');
     }
 }
+$(".bt-w-menu p").click(function() {
+    $(this).addClass("bgw").siblings().removeClass("bgw");
+});
 </script>
 <script src="/static/codemirror/lib/codemirror.js?v={{config.version}}"></script>
 <script src="/static/codemirror/addon/edit/editAll.js?v={{config.version}}"></script>

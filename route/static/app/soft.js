@@ -34,6 +34,7 @@ function softMain(name, title, version) {
         //version to
         $(".plugin_version").attr('version',version).hide();
     });
+    
 }
 
 //取软件列表
