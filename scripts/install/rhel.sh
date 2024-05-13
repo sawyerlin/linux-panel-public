@@ -210,10 +210,14 @@ else
 fi
 
 # install py39
-rm -rf /tmp/Python-3.9.6
-wget -P /tmp https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
+# upgrade to gcc 8
+yum install -y centos-release-scl devtoolset-8
+scl enable devtoolset-8 bash
 
-cd /tmp && tar -xvf Python-3.9.6.tgz && cd Python-3.9.6 && \
+rm -rf /tmp/Python-3.9.18
+wget -P /tmp https://www.python.org/ftp/python/3.9.18/Python-3.9.18.tgz
+
+cd /tmp && tar -xvf Python-3.9.18.tgz && cd Python-3.9.18 && \
 ./configure --enable-optimizations && \
 make && make altinstall
 ln -sf /usr/local/bin/python3.9 /usr/bin/python3
