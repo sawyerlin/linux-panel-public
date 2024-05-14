@@ -212,7 +212,7 @@ fi
 # install py39
 # upgrade to gcc 8
 yum install -y centos-release-scl devtoolset-8 devtoolset-8-gcc devtoolset-8-gcc-c++
-cd /www/server/mdserver-web/scripts/install && scl enable devtoolset-8 bash ./py39.sh
+cd /www/server/mdserver-web/scripts/install && scl enable devtoolset-8 ./py39.sh
 
 cd /www/server/mdserver-web/scripts && bash lib.sh
 chmod 755 /www/server/mdserver-web/data
