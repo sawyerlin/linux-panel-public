@@ -212,7 +212,8 @@ fi
 # install py39
 # upgrade to gcc 8
 yum install -y centos-release-scl devtoolset-8 devtoolset-8-gcc devtoolset-8-gcc-c++
-scl enable devtoolset-8 bash
+echo 'scl enable devtoolset-8 bash' >> ~/.bash_profile
+source ~/.bash_profile
 
 rm -rf /tmp/Python-3.9.18
 wget -P /tmp https://www.python.org/ftp/python/3.9.18/Python-3.9.18.tgz
