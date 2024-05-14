@@ -211,7 +211,7 @@ fi
 
 # install py39
 # upgrade to gcc 8
-yum install -y centos-release-scl devtoolset-8
+yum install -y centos-release-scl devtoolset-8 devtoolset-8-gcc devtoolset-8-gcc-c++
 scl enable devtoolset-8 bash
 
 rm -rf /tmp/Python-3.9.18
