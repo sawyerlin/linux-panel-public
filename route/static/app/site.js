@@ -658,9 +658,9 @@ function domainEdit(id, name, msg, status) {
 			domain_name = domain[i].name;
 			is_exist = domain[i].is_exist;
 			dns_url = domain[i].dns_url;
-			btn = '<a class="btlink" target="_blank" href="' + dns_url + '">添加</a>'
+			btn = "<a class='btlink' href='javascript:;' onclick='addDomain(\"" + domain_name + "\")'>添加</a>"
 			if (is_exist) {
-				btn = '<a class="btlink" target="_blank" href="' + dns_url + '">管理</a>'
+				btn = "<a class='btlink' href='javascript:;' onclick='getRecords(\"" + domain_name + "\")'>解析</a>"
 			}
 			echoHtml += "<tr>\
 				<td><a title='"+lan.site.click_access+"' target='_blank' href='http://" + domain_name + ":" + domain[i].port + "' class='btlinkbed'>" + domain_name + "</a></td>\
@@ -829,6 +829,209 @@ function webBackupDelete(id,pid){
 			getBackup(pid);
 		},'json');
 	})
+}
+
+function addDomain(domain) {
+	let form = `domain=${domain}`;
+	$.post('/dns/add_domain', form, function(result) {	
+		// TODO: update button
+		console.log(result);
+	});
+}
+
+function getEditRecordLine(record) {
+	let host = record?.host;
+	if (!host) {
+		host = `<input id="record_host" style="width: 150px;" value=''/>`
+	}
+	return `
+		<td id="host">${host}</td>
+		<td>
+			<select id="record_type" style="width: 50px; height: 23.14px;">
+				<option value="A" ${record?.qt === 'A' ? 'selected' : ''}>A</option>
+				<option value="NS" ${record?.qt === 'NS' ? 'selected' : ''}>NS</option>
+				<option value="CNAME" ${record?.qt === 'CNAME' ? 'selected' : ''}>CNAME</option>
+				<option value="MX" ${record?.qt === 'MX' ? 'selected' : ''}>MX</option>
+				<option value="TXT" ${record?.qt === 'TXT' ? 'selected' : ''}>TXT</option>
+				<option value="AAAA" ${record?.qt === 'AAAA' ? 'selected' : ''}>AAAA</option>
+				<option value="SRV" ${record?.qt === 'SRV' ? 'selected' : ''}>SRV</option>
+				<option value="CAA" ${record?.qt === 'CAA' ? 'selected' : ''}>CAA</option>
+				<option value="显性URL" ${record?.qt === '显性URL' ? 'selected' : ''}>显性URL</option>
+				<option value="隐性URL" ${record?.qt === '隐性URL' ? 'selected' : ''}>隐性URL</option>
+			</select>
+		</td>
+		<td>
+			<input id="record_ip" style="width: 150px;" value='${record?.val || ""}'/>
+		</td>
+		<td>
+			<input id="record_ttl" style="width: 50px;" value='${record?.ttl || ""}'/>
+		</td>
+		<td class='text-center' style="width: 50px;">${record?.state == null ? "" : record.state}</td>
+		<td class='text-center'>
+			<a href='javascript:;' class='btlink' onclick="saveRecord(${record?.id === undefined ? -1 : record.id})">保存</a>
+			| <a href='javascript:;' class='btlink' onclick="cancelRecord(${record?.id === undefined ? -1 : record.id})">取消</a>
+		</td>
+	`
+}
+
+function getReadInnerRecordLine(record) {
+	return `
+		<td>${record.host}</td>
+		<td>${record.qt}</td>
+		<td>${record.val}</td>
+		<td>${record.ttl}</td>
+		<td class='text-center'>${record.state}</td>
+		<td class='text-center'>
+			<a href='javascript:;' class='btlink' onclick="editRecord(${record.id})">设置</a>
+			| <a href='javascript:;' class='btlink' onclick="deleteRecord(${record.id})">删除</a>
+		</td>
+	`;
+}
+
+function getReadRecordLine(record) {
+	return `
+		<tr id='record-${record.id}' data-id='${record.id}'>
+			${getReadInnerRecordLine(record)}
+		</tr>
+	`
+}
+
+function editRecord(recordId) {
+	let record = records[recordId];
+	$(`#record-${record.id}`).html(getEditRecordLine(record))
+}
+
+function getRecordForm(recordId, tr) {
+	let domain = domain_name;
+	let host = tr.find("td input#record_host").val();
+	let type = tr.find("td select#record_type").val();
+	let ip = tr.find("td input#record_ip").val();
+	let ttl = tr.find("td input#record_ttl").val();
+
+	return `id=${recordId}&domain=${domain}&host=${host}&type=${type}&ip=${ip}&ttl=${ttl}`;
+}
+
+function saveRecord(recordId) {
+	let tr = null;
+	if (recordId === -1) {
+		tr = $("#record-new");
+		recordId = 0;
+	} else {
+		tr = $(`#record-${recordId}`);
+	}
+	
+	$.post('/dns/save_record', getRecordForm(recordId, tr), function(result) {	
+		let addInfo = JSON.parse(result);
+		if (addInfo.data.rec == 0) {
+			let host = tr.find("td input#record_host").val() || tr.find("td#host").html();
+			let type = tr.find("td select#record_type").val();
+			let ip = tr.find("td input#record_ip").val();
+			let ttl = tr.find("td input#record_ttl").val();
+			let tbody = tr.parent();
+			tr.remove();
+			let record = {
+				"id": recordId || addInfo.data.id,
+				"host": host,
+				"qt": type,
+				"val": ip,
+				"ttl": ttl,
+				"state": 0,
+			};
+			records[record['id']] = record;
+			tbody.prepend(getReadRecordLine(record));
+		}
+		layer.open({
+			type: 1,
+			area: "500px",
+			title: addInfo.data.rec == 0? "成功!" : "错误",
+			closeBtn: 1,
+			content: `<div style="margin: 20px">${addInfo.data.msg}</div>`
+		});
+	});
+}
+
+function cancelRecord(recordId) {
+	if (recordId === -1) {
+		$("#record-new").remove();
+	} else {
+		let record = records[recordId];
+		$(`#record-${record.id}`).html(getReadInnerRecordLine(record))
+	}
+}
+
+function deleteRecord(recordId) {
+	let record = records[recordId];
+	let tr = $(`#record-${recordId}`);
+	$.post('/dns/delete_record', getRecordForm(recordId, tr), function(result) {	
+		let delInfo = JSON.parse(result);
+		if (delInfo.data.rec == 0) {
+			$(`#record-${record.id}`).remove();
+			delete records[recordId];
+		}
+
+		layer.open({
+			type: 1,
+			area: "500px",
+			title: delInfo.data.rec == 0? "成功!" : "错误",
+			closeBtn: 1,
+			content: `<div style="margin: 20px;">${delInfo.data.msg}</div>`
+		});
+	});
+}
+
+function addRecord() {
+	let tbody = $("#record-webBody");
+	let row = $("#record-new");
+	if (row.length) {
+		row.html(getEditRecordLine());
+	} else {
+		tbody.prepend(`<tr id="record-new">${getEditRecordLine()}</tr>`);
+	}
+}
+
+let records = {};
+let domain_name = "";
+function getRecords(domain) {
+	domain_name = domain;
+	let form = `domain=${domain}`;
+	$.post('/dns/get_records', form, function(result) {	
+		let data = JSON.parse(result);
+		var body = "";
+		records = {};
+		data.data.data.list.forEach(function(record) {
+			records[record.id] = record;
+			body += getReadRecordLine(record);
+		});
+		layer.open({
+			type: 1,
+			skin: 'demo-class',
+			area: '700px',
+			title: '记录解析',
+			closeBtn: 1,
+			shift: 0,
+			shadeClose: false,
+			content: `
+				<div class='bt-form ptb15 mlr15'>
+					<button onclick="addRecord()" class="btn btn-success btn-sm btn-title" type="button">添加记录</button>&nbsp;
+					<div class='divtable mtb15' style='margin-bottom:0'>
+						<table class="table table-hover" width="100%">
+							<thead>
+								<tr>
+									<th width="150">主机名</th>
+									<th width="50">类型</th>
+									<th width="150">记录值</th>
+									<th width="50">TTL</th>
+									<th width="50" class="text-center">状态</th>
+									<th class='text-center'>操作</th>
+								</tr>
+							</thead>
+							<tbody id="record-webBody">${body}</tbody>
+						</table>
+						<div class="page"></div>
+					</div>
+				</div>`
+		});
+	});
 }
 
 function speedDetail(page, id, s_ip, s_name) {
@@ -1425,7 +1628,7 @@ function dirBinding(id){
 			   + "子目录：<select class='bt-input-text mr20' name='dirName'>"+dirList+"</select>"
 			   + "<button class='btn btn-success btn-sm' onclick='addDirBinding("+id+")'>添加</button>"
 			   + "</div>"
-			   + "<div class='divtable mtb15' style='height:470px;overflow:auto'><table class='table table-hover' width='100%' style='margin-bottom:0'>"
+			   + "<div class='divtable mtb15' style='height:470px;overflow:auto'>添加<table class='table table-hover' width='100%' style='margin-bottom:0'>"
 			   + "<thead><tr><th>域名</th><th width='58'>连通率</th><th width='68'>DNS管理</th><th width='70'>端口</th><th width='100'>子目录</th><th width='100' class='text-right'>操作</th></tr></thead>"
 			   + "<tbody id='checkDomain'>" + echoHtml + "</tbody>"
 			   + "</table></div>";
