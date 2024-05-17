@@ -10,6 +10,11 @@ $('#site_search').click(function(){
 	getWeb(1, -1, $('#site_search_input').val());
 });
 
+function getSuccessRate(rate_class, rate) {
+	let progress = `<div class='progress-bar ${rate_class}' role='progressbar' style='width: ${rate}%' aria-valuenow='${rate}' aria-valuemin='0' aria-valuemax='100'></div>`
+	return `<div class='progress' style='position: relative;'><span style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; line-height: 20px; color: black;'>${rate}%</span>${progress}</div>`;
+}
+
 /**
  * 取回网站数据列表
  * @param {Number} page   当前页
@@ -62,13 +67,14 @@ $('#site_search').click(function(){
 			var rate = data.data[i].success_rate; 
 			if (rate !== undefined) {
 				rate_class = 'bg-success';
-				if (rate >=0 && rate <= 30) {
+				if (rate >=0 && rate <= 60) {
 					rate_class = 'bg-danger'
-				} else if (rate > 30 && rate <= 90) {
+				} else if (rate > 60 && rate <= 80) {
 					rate_class = 'bg-warning'
+				} else if (rate > 80 && rate <= 99) {
+					rate_class = 'bg-good'
 				}
-				progress = "<div class='progress-bar "+rate_class+"' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'></div>"
-				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + data.data[i].domain_speed_id + ")\"><div class='progress' style='position: relative;'><span style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; line-height: 20px;'>" +rate+ "%</span>" +  progress + "</div></a>";
+				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + data.data[i].domain_speed_id + ", undefined, undefined, '"+rate_class+"', "+rate+")\">"+getSuccessRate(rate_class, rate)+"</a>";
 			}
 			//是否设置有效期
 			var web_end_time = (data.data[i].edate == "0000-00-00") ? '永久': data.data[i].edate;
@@ -633,6 +639,13 @@ function syncDeleteSite(dataList,successCount,errorMsg,path){
 	},'json');
 }
 
+function getDNSBtn(is_exist, domain_name) {
+	btn = "<a class='btlink' href='javascript:;' onclick='addDomain(\"" + domain_name + "\")'>添加</a>"
+	if (is_exist) {
+		btn = "<a class='btlink' href='javascript:;' onclick='getRecords(\"" + domain_name + "\")'>解析</a>"
+	}
+	return btn
+}
 
 /**
  * 域名管理
@@ -647,25 +660,23 @@ function domainEdit(id, name, msg, status) {
 			var rate = domain[i].success_rate; 
 			if (rate != undefined) {
 				rate_class = 'bg-success';
-				if (rate >=0 && rate <= 30) {
+				if (rate >=0 && rate <= 60) {
 					rate_class = 'bg-danger'
-				} else if (rate > 30 && rate <= 90) {
+				} else if (rate > 60 && rate <= 80) {
 					rate_class = 'bg-warning'
+				} else if (rate > 80 && rate <= 99) {
+					rate_class = 'bg-good'
 				}
-				progress = "<div class='progress-bar " +rate_class+ "' role='progressbar' style='width: " + rate + "%' aria-valuenow='" + rate + "' aria-valuemin='0' aria-valuemax='100'></div>"
-				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ")\"><div class='progress' style='position: relative;'><span style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; line-height: 20px;'>" +rate+ "%</span>" +  progress + "</div></a>";
+				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ", undefined, undefined, '"+rate_class+"', "+rate+")\">" +getSuccessRate(rate_class, rate) + "</a>";
 			}
 			domain_name = domain[i].name;
 			is_exist = domain[i].is_exist;
 			dns_url = domain[i].dns_url;
-			btn = "<a class='btlink' href='javascript:;' onclick='addDomain(\"" + domain_name + "\")'>添加</a>"
-			if (is_exist) {
-				btn = "<a class='btlink' href='javascript:;' onclick='getRecords(\"" + domain_name + "\")'>解析</a>"
-			}
+			btn = getDNSBtn(is_exist, domain_name);
 			echoHtml += "<tr>\
 				<td><a title='"+lan.site.click_access+"' target='_blank' href='http://" + domain_name + ":" + domain[i].port + "' class='btlinkbed'>" + domain_name + "</a></td>\
 				<td width='200'>" + success_rate + "</td>\
-				<td>"+btn+"</td>\
+				<td id='"+domain_name+"'>"+btn+"</td>\
 				<td><a class='btlinkbed'>" + domain[i].port + "</a></td>\
 				<td class='text-center'><a class='table-btn-del' href='javascript:;' onclick=\"delDomain(" + id + ",'" + name + "','" + domain[i].name + "','" + domain[i].port + "',1)\"><span class='glyphicon glyphicon-trash'></span></a></td>\
 				</tr>";
@@ -824,7 +835,7 @@ function webBackupDelete(id,pid){
 	layer.confirm('真的要删除备份包吗?',{title:'删除备份文件!',icon:3,closeBtn:2},function(index){
 		var loadT =layer.msg('正在删除,请稍候...', {icon:16,time:0,shade: [0.3, '#000']});
 		$.post('/site/del_backup','id='+id, function(rdata){
-			layer.closeAll();
+			layer.close(loadT);
 			layer.msg(rdata.msg,{icon:rdata.status?1:2});
 			getBackup(pid);
 		},'json');
@@ -834,8 +845,18 @@ function webBackupDelete(id,pid){
 function addDomain(domain) {
 	let form = `domain=${domain}`;
 	$.post('/dns/add_domain', form, function(result) {	
-		// TODO: update button
-		console.log(result);
+		let addInfo = JSON.parse(result);
+		if (addInfo.data.rec == 0) {
+			let td = $(`td#${domain}`.replace(/\./g, '\\.'));
+			td.html(getDNSBtn(true, domain));
+		}
+		layer.open({
+			type: 1,
+			area: "500px",
+			title: addInfo.data.rec == 0? "成功!" : "错误",
+			closeBtn: 1,
+			content: `<div style="margin: 20px">${addInfo.data.msg}</div>`
+		});
 	});
 }
 
@@ -1011,30 +1032,36 @@ function getRecords(domain) {
 			shift: 0,
 			shadeClose: false,
 			content: `
-				<div class='bt-form ptb15 mlr15'>
-					<button onclick="addRecord()" class="btn btn-success btn-sm btn-title" type="button">添加记录</button>&nbsp;
-					<div class='divtable mtb15' style='margin-bottom:0'>
-						<table class="table table-hover" width="100%">
-							<thead>
-								<tr>
-									<th width="150">主机名</th>
-									<th width="50">类型</th>
-									<th width="150">记录值</th>
-									<th width="50">TTL</th>
-									<th width="50" class="text-center">状态</th>
-									<th class='text-center'>操作</th>
-								</tr>
-							</thead>
-							<tbody id="record-webBody">${body}</tbody>
-						</table>
-						<div class="page"></div>
+				<div class="safe bgw mtb15 pd15">
+					<pre style="color: red;">如解析当前域名xxxx.baidu.com 主机名请输入@,如输入其他则解析为 x.xxxx.baidu.com
+添加解析后请将该顶级域名DNS服务器修改为以便立即生效: NS1.dns1736.com NS2.dns1736.com。</pre>
+					<div class='bt-form ptb15 mlr15'>
+						<button onclick="addRecord()" class="btn btn-success btn-sm btn-title" type="button">添加记录</button>&nbsp;
+						<div class='divtable mtb15' style='margin-bottom:0'>
+							<table class="table table-hover" width="100%">
+								<thead>
+									<tr>
+										<th width="150">主机名</th>
+										<th width="50">类型</th>
+										<th width="150">记录值</th>
+										<th width="50">TTL</th>
+										<th width="50" class="text-center">状态</th>
+										<th class='text-center'>操作</th>
+									</tr>
+								</thead>
+								<tbody id="record-webBody">${body}</tbody>
+							</table>
+							<div class="page"></div>
+						</div>
 					</div>
-				</div>`
+				</div>
+			`
 		});
 	});
 }
 
-function speedDetail(page, id, s_ip, s_name) {
+let speedDetailLayer = undefined;
+function speedDetail(page, id, s_ip, s_name, rate_class, rate) {
 	var form = `domain_speed_id=${id}&limit=50&p=${page}`;
 	if (!!s_ip) {
 		form += `&s_ip=${s_ip}`
@@ -1051,21 +1078,21 @@ function speedDetail(page, id, s_ip, s_name) {
 			if (ip == s_ip) {
 				ips += `<span class='Pcurrent'>${ip}</span>`;
 				if (s_name) {
-					ips = `<a class="Pnum" onclick='speedDetail(1, "${id}", undefined, "${s_name}")'>ALL</a>` + ips;
+					ips = `<a class="Pnum" onclick='speedDetail(1, "${id}", undefined, "${s_name}", "${rate_class}", ${rate})'>全部</a>` + ips;
 				} else {
-					ips = `<a class="Pnum" onclick='speedDetail(1, "${id}", undefined, ${s_name})'>ALL</a>` + ips;
+					ips = `<a class="Pnum" onclick='speedDetail(1, "${id}", undefined, ${s_name})', "${rate_class}", ${rate}>全部</a>` + ips;
 				}
 				isAll = false
 			} else {
 				if (s_name) {
-					ips += `<a class="Pnum" onclick='speedDetail(1, "${id}", "${ip}", "${s_name}}")'>${ip}</a>`
+					ips += `<a class="Pnum" onclick='speedDetail(1, "${id}", "${ip}", "${s_name}", "${rate_class}", ${rate})'>${ip}</a>`
 				} else {
-					ips += `<a class="Pnum" onclick='speedDetail(1, "${id}", "${ip}", ${s_name})'>${ip}</a>`
+					ips += `<a class="Pnum" onclick='speedDetail(1, "${id}", "${ip}", ${s_name})', "${rate_class}", ${rate}>${ip}</a>`
 				}
 			}
 		});
 		if (isAll) {
-			ips = "<span class='Pcurrent'>ALL</span>" + ips; 
+			ips = "<span class='Pcurrent'>全部</span>" + ips; 
 		}
 
 		var names = "";
@@ -1074,37 +1101,50 @@ function speedDetail(page, id, s_ip, s_name) {
 			if (name == s_name) {
 				names += `<span class='Pcurrent'>${name}</span>`;
 				if (s_ip) {
-					names = `<a class="Pnum" onclick='speedDetail(1, "${id}", "${s_ip}", undefined)'>ALL</a>` + names;
+					names = `<a class="Pnum" onclick='speedDetail(1, "${id}", "${s_ip}", undefined, "${rate_class}", ${rate})'>全部</a>` + names;
 				} else {
-					names = `<a class="Pnum" onclick='speedDetail(1, "${id}", ${s_ip}, undefined)'>ALL</a>` + names;
+					names = `<a class="Pnum" onclick='speedDetail(1, "${id}", ${s_ip}, undefined, "${rate_class}", ${rate})'>全部</a>` + names;
 				}
 				isAll = false
 			} else {
 				if (s_ip) {
-					names += `<a class="Pnum" onclick='speedDetail(1, "${id}", "${s_ip}", "${name}")'>${name}</a>`;
+					names += `<a class="Pnum" onclick='speedDetail(1, "${id}", "${s_ip}", "${name}", "${rate_class}", ${rate})'>${name}</a>`;
 				} else {
-					names += `<a class="Pnum" onclick='speedDetail(1, "${id}", ${s_ip}, "${name}")'>${name}</a>`;
+					names += `<a class="Pnum" onclick='speedDetail(1, "${id}", ${s_ip}, "${name}", "${rate_class}", ${rate})'>${name}</a>`;
 				}
 			}
 		});
 		if (isAll) {
-			names = "<span class='Pcurrent'>ALL</span>" + names; 
+			names = "<span class='Pcurrent'>全部</span>" + names; 
 		}
+
 		var body = "";
 		data.speed_details.forEach(function(speed_detail) {
+			let time = speed_detail.speed_time;
+			speed_class = 'bg-success';
+			if (time >=10) {
+				speed_class = 'bg-danger'
+			} else if (time >= 3 && time < 10) {
+				speed_class = 'bg-warning'
+			} else if (time >= 1 && time < 3) {
+				speed_class = 'bg-good'
+			}
 			body += `
 				<tr>
 					<td>${speed_detail.id}</td>
 					<td>${speed_detail.name}</td>
 					<td>${speed_detail.code}</td>
-					<td>${speed_detail.speed_time}</td>
+					<td><span style="padding: 5px; color: white;" class="${speed_class}">${speed_detail.speed_time}</span></td>
 					<td>${speed_detail.ip}</td>
 				</tr>
 			`;
 		});
 
-		layer.closeAll();
-		layer.open({
+		if (speedDetailLayer) {
+			layer.close(speedDetailLayer);
+		}
+
+		speedDetailLayer = layer.open({
 			type: 1,
 			skin: 'demo-class',
 			area: '700px',
@@ -1113,33 +1153,39 @@ function speedDetail(page, id, s_ip, s_name) {
 			shift: 0,
 			shadeClose: false,
 			content: `
-				<div class='bt-form ptb15 mlr15' style="display:flex; flex-flow: column;">
-					<div class='page' style="display: flex; height: unset;">
-						<div style='float: left;'>
-						${ips}
+				<div class="safe bgw mtb15 pd15">
+					<div style="margin: 0 15px;">测速网址: ${data.address}</div>
+					<div style="margin: 0 15px;">测速时间: ${data.addtime}</div>
+					<div style="margin: 0 15px;">${getSuccessRate(rate_class, rate)}</div>
+					<div class='bt-form ptb15 mlr15' style="display:flex; flex-flow: column;">
+						<div class='page' style="display: flex; height: unset;">
+							<div style='float: left;'>
+							${ips}
+							</div>
+						</div>
+						<div class='page' style="display: flex; height: unset;">
+							<div style='float: left;'>
+							${names}
+							</div>
+						</div>
+						<div class='divtable mtb15' style='margin-bottom:0'>
+							<table class="table table-hover" width="100%">
+								<thead>
+									<tr>
+										<th width="58"></th>
+										<th width="150">检测点</th>
+										<th style="cursor: pointer;" width="98">状态</span></th>
+										<th width="150">耗时</th>
+										<th width="26%">解析IP</th>
+									</tr>
+								</thead>
+								<tbody id="webBody">${body}</tbody>
+							</table>
+							<div class="page">${data.page}</div>
 						</div>
 					</div>
-					<div class='page' style="display: flex; height: unset;">
-						<div style='float: left;'>
-						${names}
-						</div>
-					</div>
-					<div class='divtable mtb15' style='margin-bottom:0'>
-						<table class="table table-hover" width="100%">
-							<thead>
-								<tr>
-									<th width="58"></th>
-									<th width="150">Name<span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;color:#bbb"></span></th>
-									<th style="cursor: pointer;" width="98">Status<span class="glyphicon glyphicon-triangle-top" style="margin-left:5px;color:#bbb"></span></th>
-									<th width="150">Speed Time</th>
-									<th width="26%">IP</th>
-								</tr>
-							</thead>
-							<tbody id="webBody">${body}</tbody>
-						</table>
-						<div class="page">${data.page}</div>
-					</div>
-				</div>`
+				</div>
+			`
 		});
 	});
 }

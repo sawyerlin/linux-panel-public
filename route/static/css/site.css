@@ -5101,14 +5101,18 @@ select[disabled]{
     margin-bottom: unset;
 }
 
-.progress .bg-success {
-   background-color: #28a745 !important; 
+.bg-success {
+   background-color: #24aa1d !important; 
+}
+
+.bg-good {
+    background-color: #87d068 !important;
 }
 
 .bg-warning {
-    background-color: #ffc107 !important;
+    background-color: #f69833 !important;
 }
 
 .bg-danger {
-    background-color: #dc3545 !important;
+    background-color: #e61610 !important;
 }
