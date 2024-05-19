@@ -94,7 +94,7 @@ function getSuccessRate(rate_class, rate) {
 					<td>" + status + "</td>\
 					<td>" + backup + "</td>\
 					<td><a class='btlink' title='打开目录"+data.data[i].path+"' href=\"javascript:openPath('"+data.data[i].path+"');\">" + shortpath + "</a></td>\
-					<td width='200'>" + success_rate + "</td>\
+					<td width='100'>" + success_rate + "</td>\
 					<td><a class='btlink setTimes' id='site_"+data.data[i].id+"' data-ids='"+data.data[i].id+"'>" + web_end_time + "</a></td>\
 					<td><a class='btlinkbed' href='javascript:;' data-id='"+data.data[i].id+"'>" + data.data[i].ps + "</a></td>\
 					<td style='text-align:right; color:#bbb'>\
@@ -675,7 +675,7 @@ function domainEdit(id, name, msg, status) {
 			btn = getDNSBtn(is_exist, domain_name);
 			echoHtml += "<tr>\
 				<td><a title='"+lan.site.click_access+"' target='_blank' href='http://" + domain_name + ":" + domain[i].port + "' class='btlinkbed'>" + domain_name + "</a></td>\
-				<td width='200'>" + success_rate + "</td>\
+				<td width='100'>" + success_rate + "</td>\
 				<td id='"+domain_name+"'>"+btn+"</td>\
 				<td><a class='btlinkbed'>" + domain[i].port + "</a></td>\
 				<td class='text-center'><a class='table-btn-del' href='javascript:;' onclick=\"delDomain(" + id + ",'" + name + "','" + domain[i].name + "','" + domain[i].port + "',1)\"><span class='glyphicon glyphicon-trash'></span></a></td>\

@@ -1,9 +1,26 @@
 function init() {
     console.log('init...')
-    selectProgress(1);
-    $('.psync_info').show();
-    $('.psync_path').hide();
-    $('.psync_data').hide();
+    $.post('/bt/get_progress', '', function(result) {
+        let progress = JSON.parse(result);
+        if (progress.data >= 100 || progress.data <= 0) {
+            selectProgress(1);
+            $('.psync_info').show();
+            $('.psync_path').hide();
+            $('.psync_data').hide();
+        } else {
+            selectProgress(4);
+            $('.psync_info').hide();
+            $('.psync_path').hide();
+            $('.psync_data').hide();
+            $('.psync_migrate').html(getProgressHtml());
+            $('.psync_migrate').show();
+            $('.psync_migrate pre').text(progress.msg);
+            let width = progress.data+'%';
+            $('.psync_migrate .progress_info_bar').width(width);
+            $('.psync_migrate .progress_info').text(width);
+        }
+    });
+    
 
 
     $('#sites_All').on('click',function(){ 
@@ -152,6 +169,21 @@ function chooseData(remoteData) {
     });
 }
 
+function getProgressHtml() {
+    return '<div style="margin: 0 40px;">\
+        <div class="line">\
+            <div style="text-align:left"><span class="action">--</span>\
+            <span style="margin-left: 20px;" class="done">当前: --</span><img src="/static/img/ing.gif"></div>\
+            <div class="bt-progress" style="border-radius:0;height:20px;line-height:19px">\
+                <div class="bt-progress-bar progress_info_bar" style="border-radius: 0px; height: 20px; width: 0%;">\
+                    <span class="bt-progress-text progress_info"></span></div>\
+                </div>\
+            </div>\
+        </div>\
+        <pre style="height: 222px;text-align: left;margin:5px 38px 0;font-size: 12px;line-height: 20px;padding: 10px;background-color: #333;color: #fff;"></pre>\
+    </div>';
+}
+
 function migrate(remoteData) {
     let body = {
         sites: [],
@@ -173,20 +205,7 @@ function migrate(remoteData) {
 
     var form = `migrate_data=${JSON.stringify(body)}`;
 	$.post('/bt/migrate', form, function(result) {
-        var progress = '<div style="margin: 0 40px;">\
-            <div class="line">\
-                <div style="text-align:left"><span class="action">--</span>\
-                <span style="margin-left: 20px;" class="done">当前: --</span><img src="/static/img/ing.gif"></div>\
-                <div class="bt-progress" style="border-radius:0;height:20px;line-height:19px">\
-                    <div class="bt-progress-bar progress_info_bar" style="border-radius: 0px; height: 20px; width: 0%;">\
-                        <span class="bt-progress-text progress_info"></span></div>\
-                    </div>\
-                </div>\
-            </div>\
-            <pre style="height: 222px;text-align: left;margin:5px 38px 0;font-size: 12px;line-height: 20px;padding: 10px;background-color: #333;color: #fff;"></pre>\
-        </div>';
-
-
+        var progress = getProgressHtml();
         $('.psync_data').hide();
         $('.psync_migrate').html(progress);
         $('.psync_migrate').show();
