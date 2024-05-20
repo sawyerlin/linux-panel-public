@@ -15,6 +15,26 @@ function getSuccessRate(rate_class, rate) {
 	return `<div class='progress' style='position: relative;'><span style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; line-height: 20px; color: black;'>${rate}%</span>${progress}</div>`;
 }
 
+function getSuccessRateDiv(rate, domain_speed_id) {
+	let success_rate = "N/A";
+	if (rate !== undefined) {
+		if (rate == -1) {
+			success_rate = "测速失败";
+		} else {
+			rate_class = 'bg-success';
+			if (rate >=0 && rate <= 60) {
+				rate_class = 'bg-danger'
+			} else if (rate > 60 && rate <= 80) {
+				rate_class = 'bg-warning'
+			} else if (rate > 80 && rate <= 99) {
+				rate_class = 'bg-good'
+			}
+			success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain_speed_id + ", undefined, undefined, '"+rate_class+"', "+rate+")\">"+getSuccessRate(rate_class, rate)+"</a>";
+		}
+	}
+	return success_rate;
+}
+
 /**
  * 取回网站数据列表
  * @param {Number} page   当前页
@@ -63,19 +83,7 @@ function getSuccessRate(rate_class, rate) {
 			} else {
 				var backup = "<a href='javascript:;' class='btlink' onclick=\"getBackup(" + data.data[i].id + ")\">无备份</a>";
 			}
-			var success_rate = "N/A";
-			var rate = data.data[i].success_rate; 
-			if (rate !== undefined) {
-				rate_class = 'bg-success';
-				if (rate >=0 && rate <= 60) {
-					rate_class = 'bg-danger'
-				} else if (rate > 60 && rate <= 80) {
-					rate_class = 'bg-warning'
-				} else if (rate > 80 && rate <= 99) {
-					rate_class = 'bg-good'
-				}
-				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + data.data[i].domain_speed_id + ", undefined, undefined, '"+rate_class+"', "+rate+")\">"+getSuccessRate(rate_class, rate)+"</a>";
-			}
+			var success_rate = getSuccessRateDiv(data.data[i].success_rate, data.data[i].domain_speed_id);
 			//是否设置有效期
 			var web_end_time = (data.data[i].edate == "0000-00-00") ? '永久': data.data[i].edate;
 			//表格主体
@@ -656,19 +664,7 @@ function domainEdit(id, name, msg, status) {
 
 		var echoHtml = "";
 		for (var i = 0; i < domain.length; i++) {
-			var success_rate = "N/A";
-			var rate = domain[i].success_rate; 
-			if (rate != undefined) {
-				rate_class = 'bg-success';
-				if (rate >=0 && rate <= 60) {
-					rate_class = 'bg-danger'
-				} else if (rate > 60 && rate <= 80) {
-					rate_class = 'bg-warning'
-				} else if (rate > 80 && rate <= 99) {
-					rate_class = 'bg-good'
-				}
-				success_rate = "<a href='javascript:;' class='btlink' onclick=\"speedDetail(1, " + domain[i].domain_speed_id + ", undefined, undefined, '"+rate_class+"', "+rate+")\">" +getSuccessRate(rate_class, rate) + "</a>";
-			}
+			var success_rate = getSuccessRateDiv(domain[i].success_rate, domain[i].domain_speed_id);
 			domain_name = domain[i].name;
 			is_exist = domain[i].is_exist;
 			dns_url = domain[i].dns_url;
@@ -882,6 +878,14 @@ function getEditRecordLine(record) {
 			</select>
 		</td>
 		<td>
+			<select id="record_view" style="width: 50px; height: 23.14px;">
+				<option value="9000" ${record?.view === '9000' ? 'selected' : ''}>默认</option>
+				<option value="9001" ${record?.view === '9001' ? 'selected' : ''}>电信</option>
+				<option value="9002" ${record?.view === '9002' ? 'selected' : ''}>联通</option>
+				<option value="9003" ${record?.view === '9003' ? 'selected' : ''}>移动</option>
+			</select>
+		</td>
+		<td>
 			<input id="record_ip" style="width: 150px;" value='${record?.val || ""}'/>
 		</td>
 		<td>
@@ -896,9 +900,18 @@ function getEditRecordLine(record) {
 }
 
 function getReadInnerRecordLine(record) {
+	let view = "默认";
+	if (record.view == "9001") {
+		view = "电信";
+	} else if (record.view == "9002") {
+		view = "联通";
+	} else if (record.view == "9003") {
+		view = "移动";
+	}
 	return `
 		<td>${record.host}</td>
 		<td>${record.qt}</td>
+		<td>${view}</td>
 		<td>${record.val}</td>
 		<td>${record.ttl}</td>
 		<td class='text-center'>${record.state}</td>
@@ -924,12 +937,13 @@ function editRecord(recordId) {
 
 function getRecordForm(recordId, tr) {
 	let domain = domain_name;
-	let host = tr.find("td input#record_host").val();
+	let host = tr.find("td input#record_host").val() || tr.find("td#host").html();
 	let type = tr.find("td select#record_type").val();
+	let view = tr.find("td select#record_view").val();
 	let ip = tr.find("td input#record_ip").val();
 	let ttl = tr.find("td input#record_ttl").val();
 
-	return `id=${recordId}&domain=${domain}&host=${host}&type=${type}&ip=${ip}&ttl=${ttl}`;
+	return `id=${recordId}&domain=${domain}&host=${host}&view=${view}&type=${type}&ip=${ip}&ttl=${ttl}`;
 }
 
 function saveRecord(recordId) {
@@ -946,6 +960,7 @@ function saveRecord(recordId) {
 		if (addInfo.data.rec == 0) {
 			let host = tr.find("td input#record_host").val() || tr.find("td#host").html();
 			let type = tr.find("td select#record_type").val();
+			let view = tr.find("td select#record_view").val();
 			let ip = tr.find("td input#record_ip").val();
 			let ttl = tr.find("td input#record_ttl").val();
 			let tbody = tr.parent();
@@ -954,6 +969,7 @@ function saveRecord(recordId) {
 				"id": recordId || addInfo.data.id,
 				"host": host,
 				"qt": type,
+				"view": view,
 				"val": ip,
 				"ttl": ttl,
 				"state": 0,
@@ -1044,6 +1060,7 @@ function getRecords(domain) {
 										<th width="150">主机名</th>
 										<th width="50">类型</th>
 										<th width="150">记录值</th>
+										<th width="50">线路</th>
 										<th width="50">TTL</th>
 										<th width="50" class="text-center">状态</th>
 										<th class='text-center'>操作</th>
