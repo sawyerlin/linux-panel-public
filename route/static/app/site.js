@@ -889,7 +889,7 @@ function getEditRecordLine(record) {
 			<input id="record_ip" style="width: 150px;" value='${record?.val || ""}'/>
 		</td>
 		<td>
-			<input id="record_ttl" style="width: 50px;" value='${record?.ttl || ""}'/>
+			<input type="number" id="record_ttl" min="600" style="width: 50px;" value='${record?.ttl || ""}'/>
 		</td>
 		<td class='text-center' style="width: 50px;">${record?.state == null ? "" : record.state}</td>
 		<td class='text-center'>
@@ -943,7 +943,18 @@ function getRecordForm(recordId, tr) {
 	let ip = tr.find("td input#record_ip").val();
 	let ttl = tr.find("td input#record_ttl").val();
 
-	return `id=${recordId}&domain=${domain}&host=${host}&view=${view}&type=${type}&ip=${ip}&ttl=${ttl}`;
+	if (ttl < 600) {
+		layer.open({
+			type: 1,
+			area: "500px",
+			title: "错误",
+			closeBtn: 1,
+			content: `<div style="margin: 20px">TTL必须大于或等于600!</div>`
+		});
+		return false;
+	} else {
+		return `id=${recordId}&domain=${domain}&host=${host}&view=${view}&type=${type}&ip=${ip}&ttl=${ttl}`;
+	}
 }
 
 function saveRecord(recordId) {
@@ -955,36 +966,39 @@ function saveRecord(recordId) {
 		tr = $(`#record-${recordId}`);
 	}
 	
-	$.post('/dns/save_record', getRecordForm(recordId, tr), function(result) {	
-		let addInfo = JSON.parse(result);
-		if (addInfo.data.rec == 0) {
-			let host = tr.find("td input#record_host").val() || tr.find("td#host").html();
-			let type = tr.find("td select#record_type").val();
-			let view = tr.find("td select#record_view").val();
-			let ip = tr.find("td input#record_ip").val();
-			let ttl = tr.find("td input#record_ttl").val();
-			let tbody = tr.parent();
-			tr.remove();
-			let record = {
-				"id": recordId || addInfo.data.id,
-				"host": host,
-				"qt": type,
-				"view": view,
-				"val": ip,
-				"ttl": ttl,
-				"state": 0,
-			};
-			records[record['id']] = record;
-			tbody.prepend(getReadRecordLine(record));
-		}
-		layer.open({
-			type: 1,
-			area: "500px",
-			title: addInfo.data.rec == 0? "成功!" : "错误",
-			closeBtn: 1,
-			content: `<div style="margin: 20px">${addInfo.data.msg}</div>`
+	let form = getRecordForm(recordId, tr);
+	if (form) {
+		$.post('/dns/save_record', form, function(result) {	
+			let addInfo = JSON.parse(result);
+			if (addInfo.data.rec == 0) {
+				let host = tr.find("td input#record_host").val() || tr.find("td#host").html();
+				let type = tr.find("td select#record_type").val();
+				let view = tr.find("td select#record_view").val();
+				let ip = tr.find("td input#record_ip").val();
+				let ttl = tr.find("td input#record_ttl").val();
+				let tbody = tr.parent();
+				tr.remove();
+				let record = {
+					"id": recordId || addInfo.data.id,
+					"host": host,
+					"qt": type,
+					"view": view,
+					"val": ip,
+					"ttl": ttl,
+					"state": 0,
+				};
+				records[record['id']] = record;
+				tbody.prepend(getReadRecordLine(record));
+			}
+			layer.open({
+				type: 1,
+				area: "500px",
+				title: addInfo.data.rec == 0? "成功!" : "错误",
+				closeBtn: 1,
+				content: `<div style="margin: 20px">${addInfo.data.msg}</div>`
+			});
 		});
-	});
+	}
 }
 
 function cancelRecord(recordId) {
