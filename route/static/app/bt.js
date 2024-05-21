@@ -49,70 +49,80 @@ function get_summary() {
     var loadT = layer.msg("正在获取...", { icon: 16, time: 0, shade: 0.3 });
 	$.post('/bt/get_summary', form, function(result) {
         layer.close(loadT);
-        selectProgress(2);
-        $('.psync_info').hide();
-        var info = JSON.parse(result).data;
-        var body = '<div class="divtable">\
-            <table class="table table-hover">\
-            <thead>\
-                <tr><th style="border-right:1px solid #ddd">服务</th><th>当前服务器</th><th>远程服务器</th></tr>\
-            </thead>\
-            <tbody>\
-                <tr>\
-                    <td style="border-right:1px solid #ddd">网站服务</td>\
-                    <td>'+info['local_summary']['webserver']+'</td>\
-                    <td>'+info['remote_summary']['webserver']+'</td>\
-                </tr>\
-                <tr>\
-                    <td style="border-right:1px solid #ddd">安装MySQL</td>\
-                    <td>'+(info['local_summary']['ftps']?'是':'否')+'</td>\
-                    <td>'+(info['remote_summary']['ftps']?'是':'否')+'</td>\
-                </tr>\
-                <tr>\
-                    <td style="border-right:1px solid #ddd">安装PHP</td>\
-                    <td>'+(info['local_summary']['php'].join('/'))+'</td>\
-                    <td>'+(info['remote_summary']['php'].join('/')) +'</td>\
-                </tr>\
-                <tr>\
-                    <td style="border-right:1px solid #ddd">安装pureftpd</td>\
-                    <td>'+(info['local_summary']['mysql']?'是':'否')+'</td>\
-                    <td>'+(info['remote_summary']['mysql']?'是':'否')+'</td>\
-                </tr>\
-            </tbody>\
-            </table>\
+        var info = JSON.parse(result);
+        if (info['status'] == false) {
+            layer.open({
+                type: 1,
+                area: "500px",
+                title: "错误!",
+                closeBtn: 1,
+                content: "<p style='margin: 20px;'>"+info['msg']+"<p>"
+            })
+        } else {
+            selectProgress(2);
+            $('.psync_info').hide();
+            var body = '<div class="divtable">\
+                <table class="table table-hover">\
+                <thead>\
+                    <tr><th style="border-right:1px solid #ddd">服务</th><th>当前服务器</th><th>远程服务器</th></tr>\
+                </thead>\
+                <tbody>\
+                    <tr>\
+                        <td style="border-right:1px solid #ddd">网站服务</td>\
+                        <td>'+info.data['local_summary']['webserver']+'</td>\
+                        <td>'+info.data['remote_summary']['webserver']+'</td>\
+                    </tr>\
+                    <tr>\
+                        <td style="border-right:1px solid #ddd">安装MySQL</td>\
+                        <td>'+(info.data['local_summary']['ftps']?'是':'否')+'</td>\
+                        <td>'+(info.data['remote_summary']['ftps']?'是':'否')+'</td>\
+                    </tr>\
+                    <tr>\
+                        <td style="border-right:1px solid #ddd">安装PHP</td>\
+                        <td>'+(info.data['local_summary']['php'].join('/'))+'</td>\
+                        <td>'+(info.data['remote_summary']['php'].join('/')) +'</td>\
+                    </tr>\
+                    <tr>\
+                        <td style="border-right:1px solid #ddd">安装pureftpd</td>\
+                        <td>'+(info.data['local_summary']['mysql']?'是':'否')+'</td>\
+                        <td>'+(info.data['remote_summary']['mysql']?'是':'否')+'</td>\
+                    </tr>\
+                </tbody>\
+                </table>\
+                </div>';
+            body += '<div class="line mtb20" style="text-align: left;">\
+                <button class="btn btn-default btn-sm mr20 pathTestting">重新检测</button>\
+                <button class="btn btn-default btn-sm mr20 pathBcak">上一步</button>\
+                <button class="btn btn-success btn-sm psync-next pathNext">下一步</button>\
             </div>';
-        body += '<div class="line mtb20" style="text-align: left;">\
-            <button class="btn btn-default btn-sm mr20 pathTestting">重新检测</button>\
-            <button class="btn btn-default btn-sm mr20 pathBcak">上一步</button>\
-            <button class="btn btn-success btn-sm psync-next pathNext">下一步</button>\
-        </div>';
 
-        $('.psync_path').html(body);
-        $('.psync_path').show();
-        $('.psync_path').on('click', '.pathTestting', function () {
-            get_summary();
-        });
+            $('.psync_path').html(body);
+            $('.psync_path').show();
+            $('.psync_path').on('click', '.pathTestting', function () {
+                get_summary();
+            });
 
-        $('.psync_path').on('click', '.pathBcak', function(){
-            $('.psync_path').hide();
-            $('.psync_info').show();
-            selectProgress(1);
-        });
+            $('.psync_path').on('click', '.pathBcak', function(){
+                $('.psync_path').hide();
+                $('.psync_info').show();
+                selectProgress(1);
+            });
 
-        $('.psync_path').on('click', '.pathNext', function(){
-            if (!info['is_matching']) {
-                layer.open({
-                    type: 1,
-                    area: "500px",
-                    title: "环境不匹配!",
-                    closeBtn: 1,
-                    content: "<p style='margin: 20px;'>"+info['matching_msg']+"<p>"
-                })
-            }
-            else {
-                chooseData(info['remote_result'])
-            }
-        });
+            $('.psync_path').on('click', '.pathNext', function(){
+                if (!info.data['is_matching']) {
+                    layer.open({
+                        type: 1,
+                        area: "500px",
+                        title: "环境不匹配!",
+                        closeBtn: 1,
+                        content: "<p style='margin: 20px;'>"+info.data['matching_msg']+"<p>"
+                    })
+                }
+                else {
+                    chooseData(info.data['remote_result'])
+                }
+            });
+        }
     })
 }
 
