@@ -2,7 +2,7 @@ function init() {
     console.log('init...')
     $.post('/bt/get_progress', '', function(result) {
         let progress = JSON.parse(result);
-        if (progress.data >= 100 || progress.data <= 0) {
+        if (!progress.data.migration_started) {
             selectProgress(1);
             $('.psync_info').show();
             $('.psync_path').hide();
@@ -12,12 +12,13 @@ function init() {
             $('.psync_info').hide();
             $('.psync_path').hide();
             $('.psync_data').hide();
-            $('.psync_migrate').html(getProgressHtml());
+            $('.psync_migrate').html(getProgressHtml(progress.data.migration_started));
             $('.psync_migrate').show();
             $('.psync_migrate pre').text(progress.msg);
-            let width = progress.data+'%';
+            let width = progress.data.progress+'%';
             $('.psync_migrate .progress_info_bar').width(width);
             $('.psync_migrate .progress_info').text(width);
+            progressInterval();
         }
     });
     
@@ -169,19 +170,19 @@ function chooseData(remoteData) {
     });
 }
 
-function getProgressHtml() {
-    return '<div style="margin: 0 40px;">\
-        <div class="line">\
-            <div style="text-align:left"><span class="action">--</span>\
-            <span style="margin-left: 20px;" class="done">当前: --</span><img src="/static/img/ing.gif"></div>\
-            <div class="bt-progress" style="border-radius:0;height:20px;line-height:19px">\
-                <div class="bt-progress-bar progress_info_bar" style="border-radius: 0px; height: 20px; width: 0%;">\
-                    <span class="bt-progress-text progress_info"></span></div>\
-                </div>\
-            </div>\
-        </div>\
-        <pre style="height: 222px;text-align: left;margin:5px 38px 0;font-size: 12px;line-height: 20px;padding: 10px;background-color: #333;color: #fff;"></pre>\
-    </div>';
+function getProgressHtml(migration_started) {
+    return `<div style="margin: 0 40px;">
+        <div class="line">
+            <div style="text-align:left"><span class="action">--</span>
+            <span id="migration_status" style="margin-left: 20px;" class="done">${migration_started ? "当前 <img src='/static/img/ing.gif'>" : "结束"}--</span></div>
+            <div class="bt-progress" style="border-radius:0;height:20px;line-height:19px">
+                <div class="bt-progress-bar progress_info_bar" style="border-radius: 0px; height: 20px; width: 0%;">
+                    <span class="bt-progress-text progress_info"></span></div>
+                </div>
+            </div>
+        </div>
+        <pre style="height: 222px;text-align: left;margin:5px 38px 0;font-size: 12px;line-height: 20px;padding: 10px;background-color: #333;color: #fff;"></pre>
+    </div>`;
 }
 
 function migrate(remoteData) {
@@ -205,24 +206,30 @@ function migrate(remoteData) {
 
     var form = `migrate_data=${JSON.stringify(body)}`;
 	$.post('/bt/migrate', form, function(result) {
-        var progress = getProgressHtml();
-        $('.psync_data').hide();
-        $('.psync_migrate').html(progress);
-        $('.psync_migrate').show();
-
-        let progress_interval = setInterval(function(){
-            $.post('/bt/get_progress', '', function(result) {
-                let progress = JSON.parse(result);
-                if (progress.data >= 100) {
-                    clearInterval(progress_interval);
-                }
-                $('.psync_migrate pre').text(progress.msg);
-                let width = progress.data+'%';
-                $('.psync_migrate .progress_info_bar').width(width);
-                $('.psync_migrate .progress_info').text(width);
-            })
-        }, 5000)
+        let progress = JSON.parse(result);
+        if (progress.data.migration_started) {
+            $('.psync_data').hide();
+            $('.psync_migrate').html(getProgressHtml(progress.data.migration_started));
+            $('.psync_migrate').show();
+            progressInterval();
+        }
     });
+}
+
+function progressInterval() {
+    let progress_interval = setInterval(function(){
+        $.post('/bt/get_progress', '', function(result) {
+            let progress = JSON.parse(result);
+            if (!progress.data.migration_started) {
+                clearInterval(progress_interval);
+            }
+            $('.psync_migrate pre').text(progress.msg);
+            let width = progress.data.progress+'%';
+            $('.psync_migrate .progress_info_bar').width(width);
+            $('.psync_migrate .progress_info').text(width);
+            $('#migration_status').html(`${progress.data.migration_started ? "当前 --</span><img src='/static/img/ing.gif'>" : "结束"}`);
+        })
+    }, 5000);
 }
 
 function selectProgress(val){
