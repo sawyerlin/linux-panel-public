@@ -207,12 +207,13 @@ if [ "${VERSION_ID}" == "22.04" ];then
     pip3 install -U --force-reinstall --no-binary :all: gevent
 fi
 
-cd /www/server/mdserver-web/scripts && bash lib.sh
-chmod 755 /www/server/mdserver-web/data
-
-
-if [ "${VERSION_ID}" == "22.04" ];then
-	apt install -y python3-cffi
-    pip3 install -U --force-reinstall --no-binary :all: gevent
+if [ "${VERSION_ID}" == "20.04" ];then
+	cd /usr/lib/python3/dist-packages/ && \
+	ln -s gi/_gi.cpython-38-x86_64-linux-gnu.so gi/_gi.so && \
+	ln apt_pkg.cpython-38-x86_64-linux-gnu.so apt_pkg.so && \
+	sed -i 's/isAlive/is_alive/' softwareproperties/SoftwareProperties.py && \
+	add-apt-repository ppa:ondrej/php
 fi
 
+cd /www/server/mdserver-web/scripts && bash lib.sh
+chmod 755 /www/server/mdserver-web/data
