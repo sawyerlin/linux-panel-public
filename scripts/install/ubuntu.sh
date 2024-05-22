@@ -209,9 +209,9 @@ fi
 
 if [ "${VERSION_ID}" == "20.04" ];then
 	cd /usr/lib/python3/dist-packages/ && \
-	ln -s gi/_gi.cpython-38-x86_64-linux-gnu.so gi/_gi.so && \
 	ln apt_pkg.cpython-38-x86_64-linux-gnu.so apt_pkg.so && \
 	sed -i 's/isAlive/is_alive/' softwareproperties/SoftwareProperties.py && \
+	cd gi && ln -s _gi.cpython-38-x86_64-linux-gnu.so _gi.so && \
 	add-apt-repository ppa:ondrej/php
 fi
 
