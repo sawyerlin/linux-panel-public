@@ -1100,6 +1100,12 @@ function speedDetail(page, id, s_ip, s_name, rate_class, rate) {
 	if (!!s_name) {
 		form += `&s_name=${s_name}`
 	}
+	if (!!rate_class) {
+		form += `&rate_class=${rate_class}`
+	}
+	if (!!rate) {
+		form += `&rate=${rate}`
+	}
 	$.post('/site/get_site_speed', form, function(result) {	
 		result = JSON.parse(result);
 		var data = result["data"];
