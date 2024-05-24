@@ -121,6 +121,12 @@ else
 	cd /www/server/mdserver-web && bash scripts/install/${OSNAME}.sh
 fi
 
+echo "install geneva"
+cp /www/server/mdserver-web/geneva/geneva_http* /usr/lib/systemd/system/
+systemctl enable geneva_http.service
+systemctl enable geneva_https.service
+systemctl daemon-reload
+
 if [ "${OSNAME}" == "macos" ];then
 	echo "macos end"
 	exit 0

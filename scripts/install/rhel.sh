@@ -214,11 +214,6 @@ cd proxychains/ && \
 ./configure --prefix=/usr --sysconfdir=/etc && \
 make && make install && make install-config
 
-    cp /www/server/mdserver-web/geneva/geneva_http* /usr/lib/systemd/system/
-    systemctl enable geneva_http.service
-    systemctl enable geneva_https.service
-    systemctl daemon-reload
-
 fi
 
 # install py39
