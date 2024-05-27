@@ -1,5 +1,85 @@
 [
   {
+    "author": "agentzh",
+    "checks": "server/openresty",
+    "date": "2017-11-24",
+    "home": "http://openresty.org",
+    "install_pre_inspection": true,
+    "name": "openresty",
+    "path": "server/openresty",
+    "pid": "1",
+    "ps": "轻量级，占有内存少，并发能力强",
+    "shell": "install.sh",
+    "tip": "soft",
+    "title": "OpenResty",
+    "type": "其他插件",
+    "updates": [
+      "1.17.8.2",
+      "1.19.3.1",
+      "1.21.4.2",
+      "1.21.4.3"
+    ],
+    "versions": [
+      "1.17.8.2",
+      "1.19.3.1",
+      "1.21.4.2",
+      "1.21.4.3"
+    ]
+  },
+  {
+    "author": "loveshell",
+    "checks": "server/op_waf",
+    "date": "2019-04-21",
+    "home": "https://github.com/loveshell/ngx_lua_waf",
+    "hook": [
+      {
+        "tag":"menu",
+        "menu": {
+          "title":"OP防火墙",
+          "name":"op_waf",
+          "path":"index_menu.html",
+          "js_path":"js/op_waf.js"
+        }
+      },
+      {
+        "tag":"global_static",
+        "global_static": {
+          "css_path": "css/ico.css",
+          "title":"OP防火墙",
+          "name":"op_waf"
+        }
+      },
+      {
+        "site_cb": {
+          "add": {
+            "func": "reload"
+          },
+          "delete": {
+            "func": "reload"
+          },
+          "name": "op_waf",
+          "title": "网站统计",
+          "update": {
+            "func": "reload"
+          }
+        },
+        "tag": "site_cb"
+      }
+    ],
+    "install_pre_inspection": true,
+    "name": "op_waf",
+    "path": "server/op_waf",
+    "pid": "1",
+    "ps": "有效防止sql注入/xss/一句话木马等常见渗透攻击",
+    "shell": "install.sh",
+    "tip": "soft",
+    "title": "OP防火墙",
+    "type": "其他插件",
+    "versions": [
+      "0.4.1"
+    ]
+  },
+  {
       "author": "mysql",
       "checks": "server/mysql-yum",
       "date": "2022-06-29",
@@ -33,38 +113,17 @@
       "tip": "soft",
       "title": "MySQL",
       "todo_versions": [
-        "5.7"
+        "5.7",
+        "8.0"
       ],
       "os": "rhel",
       "type": "运行环境",
       "versions": [
-        "5.7"
+        "5.7",
+        "8.0"
       ]
     },
-    {
-      "author": "Zend",
-      "checks": "server/php-yum/VERSION",
-      "coexist": true,
-      "date": "2022-07-07",
-      "display": 1,
-      "home": "https://www.php.net",
-      "install_pre_inspection": true,
-      "name": "php-yum",
-      "path": "server/php-yum/VERSION",
-      "pid": "6",
-      "ps": "PHP是世界上最好的编程语言",
-      "shell": "install.sh",
-      "sort": 7,
-      "tip": "soft",
-      "title": "PHP",
-      "os": "rhel",
-      "type": "PHP语言解释器",
-      "versions": [
-        "74",
-        "81",
-        "82"
-      ]
-    },
+    
     {
       "author": "mysql",
       "checks": "server/mysql-apt",
@@ -99,12 +158,37 @@
       "tip": "soft",
       "title": "MySQL",
       "todo_versions": [
-        "5.7"
+        "5.7",
+        "8.0"
       ],
       "type": "运行环境",
       "os": "debian",
       "versions": [
-        "5.7"
+        "5.7",
+        "8.0"
+      ]
+    },
+    {
+      "author": "Zend",
+      "checks": "server/php-yum/VERSION",
+      "coexist": true,
+      "date": "2022-07-07",
+      "display": 1,
+      "home": "https://www.php.net",
+      "install_pre_inspection": true,
+      "name": "php-yum",
+      "path": "server/php-yum/VERSION",
+      "pid": "6",
+      "ps": "PHP是世界上最好的编程语言",
+      "shell": "install.sh",
+      "sort": 7,
+      "tip": "soft",
+      "title": "PHP",
+      "os": "rhel",
+      "type": "PHP语言解释器",
+      "versions": [
+        "74",
+        "82"
       ]
     },
     {
@@ -127,13 +211,35 @@
       "os": "debian",
       "versions": [
         "56",
-        "70",
-        "71",
         "72",
-        "73",
-        "74",
-        "81",
         "82"
+      ]
+    },
+    {
+      "author": "phpMyAdmin",
+      "checks": "server/phpmyadmin",
+      "date": "2017-11-24",
+      "home": "https://www.phpmyadmin.net/",
+      "name": "phpmyadmin",
+      "path": "server/phpmyadmin",
+      "pid": "2",
+      "ps": "著名Web端MySQL管理工具",
+      "shell": "install.sh",
+      "tip": "soft",
+      "title": "phpMyAdmin",
+      "to_ver": [
+        "4.8.4"
+      ],
+      "type": "运行环境",
+      "updates": [
+        "4.4.15",
+        "4.9.10",
+        "5.2.0"
+      ],
+      "versions": [
+        "4.4.15",
+        "4.9.10",
+        "5.2.0"
       ]
     },
     {
@@ -150,6 +256,40 @@
       "title": "网站防篡改程序[PY]",
       "type": "soft",
       "versions": "1.0"
+    },
+    {
+      "author": "mdserver-web",
+      "checks": "server/pureftp",
+      "date": "2018-11-30",
+      "dev_update": "2022-6-18",
+      "home": "https://github.com/midoks/mdserver-web",
+      "name": "pureftp",
+      "path": "server/pureftp",
+      "pid": "3",
+      "ps": "一款免费FTP服务器软件",
+      "shell": "install.sh",
+      "tip": "soft",
+      "title": "PureFtpd",
+      "versions": "1.0.49",
+      "hook":[
+        {
+          "tag":"menu",
+          "menu": {
+            "title":"FTP",
+            "name":"pureftp",
+            "path":"index_menu.html",
+            "js_path":"js/ftp.js"
+          }
+        },
+        {
+          "tag":"global_static",
+          "global_static": {
+            "css_path": "css/ico.css",
+            "title":"FTP",
+            "name":"pureftp"
+          }
+        }
+      ]
     },
     {
       "author": "mariadb",
@@ -430,33 +570,7 @@
       "updates": "1.0",
       "versions": "1.0"
     },
-    {
-      "author": "agentzh",
-      "checks": "server/openresty",
-      "date": "2017-11-24",
-      "home": "http://openresty.org",
-      "install_pre_inspection": true,
-      "name": "openresty",
-      "path": "server/openresty",
-      "pid": "1",
-      "ps": "轻量级，占有内存少，并发能力强",
-      "shell": "install.sh",
-      "tip": "soft",
-      "title": "OpenResty",
-      "type": "其他插件",
-      "updates": [
-        "1.17.8.2",
-        "1.19.3.1",
-        "1.21.4.2",
-        "1.21.4.3"
-      ],
-      "versions": [
-        "1.17.8.2",
-        "1.19.3.1",
-        "1.21.4.2",
-        "1.21.4.3"
-      ]
-    },
+    
     {
       "author": "midoks",
       "checks": "server/sphinx",
@@ -621,33 +735,7 @@
         "1.0"
       ]
     },
-    {
-      "author": "phpMyAdmin",
-      "checks": "server/phpmyadmin",
-      "date": "2017-11-24",
-      "home": "https://www.phpmyadmin.net/",
-      "name": "phpmyadmin",
-      "path": "server/phpmyadmin",
-      "pid": "2",
-      "ps": "著名Web端MySQL管理工具",
-      "shell": "install.sh",
-      "tip": "soft",
-      "title": "phpMyAdmin",
-      "to_ver": [
-        "4.8.4"
-      ],
-      "type": "运行环境",
-      "updates": [
-        "4.4.15",
-        "4.9.10",
-        "5.2.0"
-      ],
-      "versions": [
-        "4.4.15",
-        "4.9.10",
-        "5.2.0"
-      ]
-    },
+    
     {
       "author": "midoks",
       "checks": "server/varnish",
@@ -702,40 +790,7 @@
         "7.2.2"
       ]
     },
-    {
-      "author": "mdserver-web",
-      "checks": "server/pureftp",
-      "date": "2018-11-30",
-      "dev_update": "2022-6-18",
-      "home": "https://github.com/midoks/mdserver-web",
-      "name": "pureftp",
-      "path": "server/pureftp",
-      "pid": "3",
-      "ps": "一款免费FTP服务器软件",
-      "shell": "install.sh",
-      "tip": "soft",
-      "title": "PureFtpd",
-      "versions": "1.0.49",
-      "hook":[
-        {
-          "tag":"menu",
-          "menu": {
-            "title":"FTP",
-            "name":"pureftp",
-            "path":"index_menu.html",
-            "js_path":"js/ftp.js"
-          }
-        },
-        {
-          "tag":"global_static",
-          "global_static": {
-            "css_path": "css/ico.css",
-            "title":"FTP",
-            "name":"pureftp"
-          }
-        }
-      ]
-    },
+    
     {
       "author": "",
       "checks": "server/webhook",
@@ -1060,42 +1115,7 @@
         "2.2.8"
       ]
     },
-    {
-      "author": "loveshell",
-      "checks": "server/op_waf",
-      "date": "2019-04-21",
-      "home": "https://github.com/loveshell/ngx_lua_waf",
-      "hook": [
-        {
-          "site_cb": {
-            "add": {
-              "func": "reload"
-            },
-            "delete": {
-              "func": "reload"
-            },
-            "name": "op_waf",
-            "title": "网站统计",
-            "update": {
-              "func": "reload"
-            }
-          },
-          "tag": "site_cb"
-        }
-      ],
-      "install_pre_inspection": true,
-      "name": "op_waf",
-      "path": "server/op_waf",
-      "pid": "1",
-      "ps": "有效防止sql注入/xss/一句话木马等常见渗透攻击",
-      "shell": "install.sh",
-      "tip": "soft",
-      "title": "OP防火墙",
-      "type": "其他插件",
-      "versions": [
-        "0.4.1"
-      ]
-    },
+    
     {
       "author": "postgresql",
       "checks": "server/postgresql",

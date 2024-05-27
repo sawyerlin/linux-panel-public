@@ -10,13 +10,16 @@ $('#site_search').click(function(){
 	getWeb(1, -1, $('#site_search_input').val());
 });
 
-function getSuccessRate(rate_class, rate) {
-	let progress = `<div class='progress-bar ${rate_class}' role='progressbar' style='width: ${rate}%' aria-valuenow='${rate}' aria-valuemin='0' aria-valuemax='100'></div>`
+function getSuccessRate(rate_class, rate, width = undefined) {
+	if (!width) {
+		width = rate;
+	}
+	let progress = `<div class='progress-bar ${rate_class}' role='progressbar' style='width: ${width}%' aria-valuenow='${rate}' aria-valuemin='0' aria-valuemax='100'></div>`
 	return `<div class='progress' style='position: relative;'><span style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); height: 20px; line-height: 20px; color: black;'>${rate}%</span>${progress}</div>`;
 }
 
 function getSuccessRateDiv(rate, domain_speed_id) {
-	let success_rate = "N/A";
+	let success_rate = getSuccessRate('bg-danger', 0, 100);
 	if (rate !== undefined) {
 		if (rate == -1) {
 			success_rate = "测速失败";
@@ -85,7 +88,15 @@ function getSuccessRateDiv(rate, domain_speed_id) {
 			}
 			var success_rate = getSuccessRateDiv(data.data[i].success_rate, data.data[i].domain_speed_id);
 			//是否设置有效期
-			var web_end_time = (data.data[i].edate == "0000-00-00") ? '永久': data.data[i].edate;
+			console.log(data.data[i]['cert_data']);
+			let ssl = "<span style='color: rgba(240,173,78)'>未部署</span>";
+			if (data.data[i]['cert_data']) {
+				let endTime = data.data[i]['cert_data'].endtime;
+				ssl = `<span style='color: rgba(32,165,58)'>剩余${endTime}天</span>`
+				if (endTime <=0 ) {
+					ssl = "<span style='color: red'>已经过期</span>"
+				}
+			}
 			//表格主体
 			var shortwebname = data.data[i].name;
 			var shortpath = data.data[i].path;
@@ -103,7 +114,7 @@ function getSuccessRateDiv(rate, domain_speed_id) {
 					<td>" + backup + "</td>\
 					<td><a class='btlink' title='打开目录"+data.data[i].path+"' href=\"javascript:openPath('"+data.data[i].path+"');\">" + shortpath + "</a></td>\
 					<td width='100'>" + success_rate + "</td>\
-					<td><a class='btlink setTimes' id='site_"+data.data[i].id+"' data-ids='"+data.data[i].id+"'>" + web_end_time + "</a></td>\
+					<td>" + ssl + "</td>\
 					<td><a class='btlinkbed' href='javascript:;' data-id='"+data.data[i].id+"'>" + data.data[i].ps + "</a></td>\
 					<td style='text-align:right; color:#bbb'>\
 					<a href='javascript:;' class='btlink' onclick=\"webEdit(" + data.data[i].id + ",'" + data.data[i].name + "','" + data.data[i].edate + "','" + data.data[i].addtime + "')\">设置</a>\
