@@ -42,14 +42,6 @@
         }
       },
       {
-        "tag":"global_static",
-        "global_static": {
-          "css_path": "css/ico.css",
-          "title":"OP防火墙",
-          "name":"op_waf"
-        }
-      },
-      {
         "site_cb": {
           "add": {
             "func": "reload"

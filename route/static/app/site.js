@@ -88,7 +88,6 @@ function getSuccessRateDiv(rate, domain_speed_id) {
 			}
 			var success_rate = getSuccessRateDiv(data.data[i].success_rate, data.data[i].domain_speed_id);
 			//是否设置有效期
-			console.log(data.data[i]['cert_data']);
 			let ssl = "<span style='color: rgba(240,173,78)'>未部署</span>";
 			if (data.data[i]['cert_data']) {
 				let endTime = data.data[i]['cert_data'].endtime;
@@ -114,7 +113,7 @@ function getSuccessRateDiv(rate, domain_speed_id) {
 					<td>" + backup + "</td>\
 					<td><a class='btlink' title='打开目录"+data.data[i].path+"' href=\"javascript:openPath('"+data.data[i].path+"');\">" + shortpath + "</a></td>\
 					<td width='100'>" + success_rate + "</td>\
-					<td>" + ssl + "</td>\
+					<td><a class='btlink webtips' href='javascript:;' onclick=\"webEdit(" + data.data[i].id + ",'" + data.data[i].name + "','" + data.data[i].edate + "','" + data.data[i].addtime + "','ssl')\">" + ssl + "</a></td>\
 					<td><a class='btlinkbed' href='javascript:;' data-id='"+data.data[i].id+"'>" + data.data[i].ps + "</a></td>\
 					<td style='text-align:right; color:#bbb'>\
 					<a href='javascript:;' class='btlink' onclick=\"webEdit(" + data.data[i].id + ",'" + data.data[i].name + "','" + data.data[i].edate + "','" + data.data[i].addtime + "')\">设置</a>\
@@ -1472,7 +1471,7 @@ function setIndexList(id){
 
 
 /*站点修改*/
-function webEdit(id,website,endTime,addtime){
+function webEdit(id,website,endTime,addtime,tab=undefined){
 	layer.open({
 		type: 1,
 		area: '700px',
@@ -1488,7 +1487,7 @@ function webEdit(id,website,endTime,addtime){
 				<p onclick=\"rewrite('"+website+"')\" title='伪静态'>伪静态</p>\
 				<p onclick='setIndexEdit("+id+")' title='默认文档'>默认文档</p>\
 				<p onclick=\"configFile('"+website+"')\" title='配置文件'>配置文件</p>\
-				<p onclick=\"setSSL("+id+",'"+website+"')\" title='SSL'>SSL</p>\
+				<p id='ssl' onclick=\"setSSL("+id+",'"+website+"')\" title='SSL'>SSL</p>\
 				<p onclick=\"phpVersion('"+website+"')\" title='PHP版本'>PHP版本</p>\
 				<p onclick=\"to301('"+website+"')\" title='重定向'>重定向</p>\
 				<p onclick=\"toProxy('"+website+"')\" title='反向代理'>反向代理</p>\
@@ -1499,30 +1498,36 @@ function webEdit(id,website,endTime,addtime){
 			<div id='webedit-con' class='bt-w-con webedit-con pd15' style='height: 565px;overflow: scroll;'></div>\
 		</div>",
 		success:function(){
-			//域名输入提示
-			var placeholder = "<div class='placeholder'>每行填写一个域名，默认为80端口<br>泛解析添加方法 *.domain.com<br>如另加端口格式为 www.domain.com:88</div>";
-			$('#newdomain').after(placeholder);
-			$(".placeholder").click(function(){
-				$(this).hide();
-				$('#newdomain').focus();
-			});
-
-			$('#newdomain').focus(function() {
-			    $(".placeholder").hide();
-			});
-			
-			$('#newdomain').blur(function() {
-				if($(this).val().length == 0){
-					$(".placeholder").show();
-				}  
-			});
-
 			//切换
 			$(".bt-w-menu p").click(function(){
 				$(this).addClass("bgw").siblings().removeClass("bgw");
 			});
 
-			domainEdit(id,website);
+			console.log(tab);
+			if (tab === 'ssl') {
+				$('.bt-w-menu p#ssl').addClass("bgw").siblings().removeClass("bgw");
+				$('.bt-w-menu p#ssl').click();
+			} else {
+				//域名输入提示
+				var placeholder = "<div class='placeholder'>每行填写一个域名，默认为80端口<br>泛解析添加方法 *.domain.com<br>如另加端口格式为 www.domain.com:88</div>";
+				$('#newdomain').after(placeholder);
+				$(".placeholder").click(function(){
+					$(this).hide();
+					$('#newdomain').focus();
+				});
+
+				$('#newdomain').focus(function() {
+					$(".placeholder").hide();
+				});
+				
+				$('#newdomain').blur(function() {
+					if($(this).val().length == 0){
+						$(".placeholder").show();
+					}  
+				});
+			
+				domainEdit(id,website);
+			}
 		}
 	});	
 }

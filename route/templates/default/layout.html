@@ -55,14 +55,17 @@
                         <li id="memuAbt"><a class="menu_set" href="/bt">导入宝塔</a></li>
                         <li id="memuAcontrol"><a class="menu_control" href="/control">监控</a></li>
                         <li id="memuAfirewall"><a class="menu_firewall" href="/firewall">安全</a></li>
+                        <li id="memuAplugins_op_waf"><a class="menu_firewall" href="/plugins/menu?tag=op_waf">OP防火墙</a></li>
                         <li id="memuAfiles"><a class="menu_folder" href="/files">文件</a></li>
                         <li id="memuAlogs"><a class="menu_logs" href="/logs">日志</a></li>                        
                         <li id="memuAcrontab"><a class="menu_day" href="/crontab">计划任务</a></li>
                         <!-- 插件设置的菜单 -->
                         {% for menu in data['hook_menu'] %}
+                        {% if menu['name'] != 'op_waf' %}
                         <li id="memuAplugins_{{menu['name']}}">
                             <a class="menu_plugin_{{menu['name']}}" href="/plugins/menu?tag={{menu['name']}}">{{menu['title']}}</a>
                         </li>
+                        {% endif %}
                         {% endfor %}
                         <li id="memuAsoft"><a class="menu_soft" href="/soft">软件管理</a><span class="softnum">1</span></li>
                         <li id="memuAconfig"><a class="menu_set" href="/config">面板设置</a></li>
