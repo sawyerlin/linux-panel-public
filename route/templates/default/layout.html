@@ -50,6 +50,8 @@
                     <ul class="menu">
                         <li id="memuA"><a class="menu_home" href="/">首页</a></li>
                         <li id="memuAsite"><a class="menu_web" href="/site">网站</a></li>
+                        <li id="memuAplugins_mysql"><a class="menu_database" href="/plugins/menu?tag=mysql">MYSQL</a></li>
+                        <li id="memuAplugins_pureftp"><a class="menu_ftp" href="/plugins/menu?tag=pureftp">FTP</a></li>
                         <li id="memuAgeneva"><a class="menu_firewall" href="/geneva">移动墙</a></li>
                         <li id="memuAdns"><a class="menu_web" href="/dns">DNS</a></li>
                         <li id="memuAbt"><a class="menu_set" href="/bt">导入宝塔</a></li>
@@ -61,7 +63,7 @@
                         <li id="memuAcrontab"><a class="menu_day" href="/crontab">计划任务</a></li>
                         <!-- 插件设置的菜单 -->
                         {% for menu in data['hook_menu'] %}
-                        {% if menu['name'] != 'op_waf' %}
+                        {% if menu['name'] not in ['op_waf', 'pureftp', 'mysql', 'mysql-yum', 'mysql-apt'] %}
                         <li id="memuAplugins_{{menu['name']}}">
                             <a class="menu_plugin_{{menu['name']}}" href="/plugins/menu?tag={{menu['name']}}">{{menu['title']}}</a>
                         </li>
