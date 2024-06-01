@@ -457,6 +457,7 @@
       ]
     },
     {
+      "disable": true,
       "author": "ssh",
       "checks": "server/webssh",
       "date": "2018-12-20",

@@ -21,7 +21,7 @@ mw_start_task()
     isStart=$(ps aux |grep 'task.py'|grep -v grep|awk '{print $2}')
     if [ "$isStart" == '' ];then
         echo -e "starting mw-tasks... \c"
-        cd $DIR && python3 task.py >> ${DIR}/logs/task.log 2>&1 &
+        cd $DIR && python3 -u task.py >> ${DIR}/logs/task.log 2>&1 &
         sleep 0.3
         isStart=$(ps aux |grep 'task.py'|grep -v grep|awk '{print $2}')
         if [ "$isStart" == '' ];then
@@ -50,7 +50,7 @@ mw_start_debug(){
 		echo '' > $DIR/logs/task.log
 	fi
 
-	python3 task.py >> $DIR/logs/task.log 2>&1 &
+	python3 -u task.py >> $DIR/logs/task.log 2>&1 &
 	port=7200    
     if [ -f /www/server/mdserver-web/data/port.pl ];then
         port=$(cat /www/server/mdserver-web/data/port.pl)
@@ -61,7 +61,7 @@ mw_start_debug(){
 }
 
 mw_start_debug2(){
-	python3 task.py >> $DIR/logs/task.log 2>&1 &
+	python3 -u task.py >> $DIR/logs/task.log 2>&1 &
 	gunicorn -b :7200 -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1  app:app
 }
 
