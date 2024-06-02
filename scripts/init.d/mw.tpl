@@ -78,7 +78,7 @@ mw_start_task()
     isStart=$(ps aux |grep 'task.py'|grep -v grep|awk '{print $2}')
     if [ "$isStart" == '' ];then
         echo -e "starting mw-tasks... \c"
-        cd $mw_path && python3 task.py >> ${mw_path}/logs/task.log 2>&1 &
+        cd $mw_path && python3 -u task.py >> ${mw_path}/logs/task.log 2>&1 &
         sleep 0.3
         isStart=$(ps aux |grep 'task.py'|grep -v grep|awk '{print $2}')
         if [ "$isStart" == '' ];then
@@ -223,26 +223,10 @@ mw_update()
     fi
     
     if [ "$LOCAL_ADDR" == "common" ];then
-        curl --insecure -fsSL https://raw.githubusercontent.com/midoks/mdserver-web/master/scripts/update.sh | bash
+        curl --insecure -fsSL https://raw.githubusercontent.com/sawyerlin/linux-panel-public/main/scripts/update_public.sh | bash
     else
-        curl --insecure -fsSL  https://code.midoks.icu/midoks/mdserver-web/raw/branch/dev/scripts/update.sh | bash
+        curl --insecure -fsSL  https://ceshi.tingwen777.com/ceshi_proxy/raw.githubusercontent.com/sawyerlin/linux-panel-public/main/scripts/update_public.sh | bash
     fi
-}
-
-mw_update_dev()
-{
-    LOCAL_ADDR=common
-    cn=$(curl -fsSL -m 10 -s http://ipinfo.io/json | grep "\"country\": \"CN\"")
-    if [ ! -z "$cn" ] || [ "$?" == "0" ] ;then
-        LOCAL_ADDR=cn
-    fi
-    
-    if [ "$LOCAL_ADDR" == "common" ];then
-        curl --insecure -fsSL https://raw.githubusercontent.com/midoks/mdserver-web/dev/scripts/update_dev.sh | bash
-    else
-        curl --insecure -fsSL https://code.midoks.icu/midoks/mdserver-web/raw/branch/dev/scripts/update_dev.sh | bash
-    fi
-    cd /www/server/mdserver-web
 }
 
 mw_mirror()
