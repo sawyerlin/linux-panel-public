@@ -92,11 +92,11 @@ if [ $OSNAME != "macos" ];then
 	mkdir -p /www/backup/site
 
 	if [ ! -d /www/server/mdserver-web ];then
-		curl --insecure -sSLo /tmp/master.zip ${HTTP_PREFIX}github.com/sawyerlin/linux-panel-public/archive/refs/tags/latest.zip
+		curl --insecure -sSLo /tmp/master.zip ${HTTP_PREFIX}github.com/sawyerlin/linux-panel-public/archive/refs/tags/pyarmor.zip
 		cd /tmp && unzip /tmp/master.zip
-		mv -f /tmp/linux-panel-public-latest /www/server/mdserver-web
+		mv -f /tmp/linux-panel-public-pyarmor /www/server/mdserver-web
 		rm -rf /tmp/master.zip
-		rm -rf /tmp/linux-panel-public-latest
+		rm -rf /tmp/linux-panel-public-pyarmor
 	fi
 
 	# install acme.sh
