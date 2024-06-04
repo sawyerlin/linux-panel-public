@@ -127,6 +127,11 @@ systemctl enable geneva_http.service
 systemctl enable geneva_https.service
 systemctl daemon-reload
 
+echo "setup pyarmor runtime"
+grep -qxF 'export PYTHONPATH=/www/server/mdserver-web/pyarmor_runtime_0000000:$PYTHONPATH' ~/.bashrc || echo 'export PYTHONPATH=/www/server/mdserver-web/pyarmor_runtime_0000000:$PYTHONPATH' >> ~/.bashrc
+source ~/.bashrc
+
+
 if [ "${OSNAME}" == "macos" ];then
 	echo "macos end"
 	exit 0
