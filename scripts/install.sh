@@ -92,11 +92,12 @@ if [ $OSNAME != "macos" ];then
 	mkdir -p /www/backup/site
 
 	if [ ! -d /www/server/mdserver-web ];then
-		curl --insecure -sSLo /tmp/master.zip ${HTTP_PREFIX}github.com/sawyerlin/linux-panel-public/archive/refs/tags/pyarmor.zip
-		cd /tmp && unzip /tmp/master.zip
-		mv -f /tmp/linux-panel-public-pyarmor /www/server/mdserver-web
+		SCRIPT_PATH="$(realpath "$0")"
+		PARENT_DIR="$(dirname "$SCRIPT_PATH")/.."
+		PARENT_DIR="$(dirname "$PARENT_DIR")/.."
+		cp -R "$PARENT_DIR" /www/server/mdserver-web
 		rm -rf /tmp/master.zip
-		rm -rf /tmp/linux-panel-public-pyarmor
+		rm -rf /tmp/linux-panel-master
 	fi
 
 	# install acme.sh
@@ -116,21 +117,10 @@ fi
 
 echo "use system version: ${OSNAME}"
 if [ "${OSNAME}" == "macos" ];then
-	curl --insecure -fsSL ${HTTP_PREFIX}github.com/sawyerlin/linux-panel-public/raw/branch/main/scripts/install/macos.sh | bash
+	curl --insecure -fsSL ${HTTP_PREFIX}github.com/sawyerlin/linux-panel/raw/branch/master/scripts/install/macos.sh | bash
 else
 	cd /www/server/mdserver-web && bash scripts/install/${OSNAME}.sh
 fi
-
-echo "install geneva"
-cp /www/server/mdserver-web/geneva/geneva_http* /usr/lib/systemd/system/
-systemctl enable geneva_http.service
-systemctl enable geneva_https.service
-systemctl daemon-reload
-
-echo "setup pyarmor runtime"
-export PYTHONPATH=/www/server/mdserver-web/pyarmor_runtime_0000000:$PYTHONPATH
-grep -qxF 'export PYTHONPATH=/www/server/mdserver-web/pyarmor_runtime_0000000:$PYTHONPATH' ~/.bashrc || echo 'export PYTHONPATH=/www/server/mdserver-web/pyarmor_runtime_0000000:$PYTHONPATH' >> ~/.bashrc
-
 
 if [ "${OSNAME}" == "macos" ];then
 	echo "macos end"
