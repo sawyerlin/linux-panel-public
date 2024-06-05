@@ -20,6 +20,7 @@ import re
 import math
 import sys
 import json
+import subprocess
 
 from flask import Flask, session
 from flask import request
@@ -794,16 +795,6 @@ class system_api:
                     os.system('unzip -o ' + toPath +
                               '/mw.zip' + ' -d ' + toPath)
 
-                # clear all pyc files
-                for root, _, files in os.walk(mw.getServerDir() + '/mdserver-web'):
-                    for file in files:
-                        # Check if the file is a .pyc file
-                        if file.endswith('.pyc'):
-                            # Construct the full path to the .pyc file
-                            full_path = os.path.join(root, file)
-                            # Delete the .pyc file
-                            os.remove(full_path)
-
                 cmd_cp = 'cp -rf ' + toPath + '/linux-panel-public-' + \
                     version + '/* ' + mw.getServerDir() + '/mdserver-web'
                 mw.execShell(cmd_cp)
@@ -811,38 +802,13 @@ class system_api:
                 mw.execShell('rm -rf ' + toPath + '/linux-panel-public-' + version)
                 mw.execShell('rm -rf ' + toPath + '/mw.zip')
 
-                update_env = '''
-#!/bin/bash
-PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
-
-P_VER=`python3 -V | awk '{print $2}'`
-
-if [ ! -f /www/server/mdserver-web/bin/activate ];then
-    cd /www/server/mdserver-web && python3 -m venv .
-    cd /www/server/mdserver-web && source /www/server/mdserver-web/bin/activate
-else
-    cd /www/server/mdserver-web && source /www/server/mdserver-web/bin/activate
-fi
-
-cn=$(curl -fsSL -m 10 http://ipinfo.io/json | grep "\"country\": \"CN\"")
-PIPSRC="https://pypi.python.org/simple"
-if [ ! -z "$cn" ];then
-    PIPSRC="https://pypi.tuna.tsinghua.edu.cn/simple"
-fi
-
-cd /www/server/mdserver-web && pip3 install -r /www/server/mdserver-web/requirements.txt -i $PIPSRC
-
-P_VER_D=`echo "$P_VER"|awk -F '.' '{print $1}'`
-P_VER_M=`echo "$P_VER"|awk -F '.' '{print $2}'`
-NEW_P_VER=${P_VER_D}.${P_VER_M}
-
-if [ -f /www/server/mdserver-web/version/r${NEW_P_VER}.txt ];then
-    cd /www/server/mdserver-web && pip3 install -r /www/server/mdserver-web/version/r${NEW_P_VER}.txt -i $PIPSRC
-fi
-'''
-
-                os.system(update_env)
+                mw.writeFileLog("[Test] update env")
+                result = subprocess.run(['bash', mw.getServerDir() + "/mdserver-web/scripts/system_update.sh"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                mw.writeFileLog(f"[Test] updated env {result}")
+                mw.writeFileLog("[Test] execute update env")
+                mw.writeFileLog("[Test] executed update env")
                 self.restartMw()
+                mw.writeFileLog("[Test] mark panel as restarted")
                 return mw.returnJson(True, '安装更新成功!')
 
             return mw.returnJson(False, '已经是最新,无需更新!')
