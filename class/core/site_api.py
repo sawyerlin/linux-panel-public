@@ -2650,6 +2650,12 @@ location ^~ {from} {\n\
             if matchVer in phpVersions:
                 continue
 
+            # 校验 php 是否安装
+            php_bin = '/usr/bin/php'
+            php_dir = php_bin + matchVer.replace('yum','').replace('apt','')
+            if not os.path.exists(php_dir):
+                continue
+
             tmp['version'] = matchVer
             tmp['name'] = 'PHP-' + matchVer
             data.append(tmp)
