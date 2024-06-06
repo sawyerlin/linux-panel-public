@@ -97,6 +97,21 @@ mw_start_task()
 
 mw_start()
 {
+    # only for update
+    SEARCH_DIR="/www/temp"
+    TARGET_DIR="/www/server/mdserver-web"
+
+    MATCH=$(find "$SEARCH_DIR" -maxdepth 1 -type d -name "linux-panel-public-*" | head -n 1)
+    if [ -n "$MATCH" ]; then
+        cp -rf "$MATCH/"* "$TARGET_DIR"
+        rm -r "$MATCH"
+        if [ $? -eq 0 ]; then
+            echo "Successfully copied contents of $MATCH to $TARGET_DIR"
+        else
+            echo "Failed to copy contents of $MATCH to $TARGET_DIR"
+        fi
+    fi
+
     mw_start_task
 	mw_start_panel
 }
