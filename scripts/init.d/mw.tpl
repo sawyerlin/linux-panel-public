@@ -125,10 +125,10 @@ mw_start()
             P_VER=`python3 -V | awk '{print $2}'`
             P_VER_D=`echo "$P_VER"|awk -F '.' '{print $1}'`
             P_VER_M=`echo "$P_VER"|awk -F '.' '{print $2}'`
-            NEW_P_VER=${{P_VER_D}}.${{P_VER_M}}
+            NEW_P_VER=${P_VER_D}.${P_VER_M}
 
-            if [ -f /www/server/mdserver-web/version/r${{NEW_P_VER}}.txt ];then
-                cd /www/server/mdserver-web && pip3 install -r version/r${{NEW_P_VER}}.txt -i $PIPSRC
+            if [ -f /www/server/mdserver-web/version/r${NEW_P_VER}.txt ];then
+                cd /www/server/mdserver-web && pip3 install -r version/r${NEW_P_VER}.txt -i $PIPSRC
             fi
         else
             echo "Failed to copy contents of $MATCH to $TARGET_DIR"
