@@ -2357,23 +2357,27 @@ location ^~ {from} {\n\
             return False
 
     def getDomain(self, pid):
-        response = get_token(TOKEN_API)
-        token = None
-        if response.status_code == 200:
-            token = response.json()
-        _list = mw.M('domain').where("pid=?", (pid,)).field(
-            'id,pid,name,port,addtime').select()
+        try:
+            response = get_token(TOKEN_API)
+            token = None
+            if response.status_code == 200:
+                token = response.json()
+            _list = mw.M('domain').where("pid=?", (pid,)).field(
+                'id,pid,name,port,addtime').select()
 
-        sql = db.Sql().dbfile('system')
-        for domain in _list:
-            domain_id = domain['id']
-            speeds = sql.table('domain_speed').where('domain_id=?', (domain_id,)).field("id,success_rate").select()
-            if speeds:
-                domain['success_rate'] = f"{speeds[0]['success_rate']:.0f}" if len(speeds) > 0 else -1
-                domain['domain_speed_id'] = speeds[0]['id'] if len(speeds) > 0 else -1
-            domain['is_exist'] = self.is_domain_exist(domain['name'], token['token_id'], token['token']) if token else False
-            domain['dns_url'] = DNS_API
-        return mw.getJson(_list)
+            sql = db.Sql().dbfile('system')
+            for domain in _list:
+                domain_id = domain['id']
+                speeds = sql.table('domain_speed').where('domain_id=?', (domain_id,)).field("id,success_rate").select()
+                if speeds:
+                    domain['success_rate'] = f"{speeds[0]['success_rate']:.0f}" if len(speeds) > 0 else -1
+                    domain['domain_speed_id'] = speeds[0]['id'] if len(speeds) > 0 else -1
+                domain['is_exist'] = self.is_domain_exist(domain['name'], token['token_id'], token['token']) if token else False
+                domain['dns_url'] = DNS_API
+            return mw.getJson(_list)
+        except Exception as ex:
+            return mw.getJson({"error": str(ex)})
+
 
     def getLogs(self, siteName):
         logPath = mw.getLogsDir() + '/' + siteName + '.log'
