@@ -2373,7 +2373,6 @@ location ^~ {from} {\n\
                     domain['success_rate'] = f"{speeds[0]['success_rate']:.0f}" if len(speeds) > 0 else -1
                     domain['domain_speed_id'] = speeds[0]['id'] if len(speeds) > 0 else -1
                 domain['is_exist'] = self.is_domain_exist(domain['name'], token['token_id'], token['token']) if token else False
-                domain['dns_url'] = DNS_API
             return mw.getJson(_list)
         except Exception as ex:
             return mw.getJson({"error": str(ex)})
